@@ -20,7 +20,7 @@
 
 \makeindex
 
-\thesistitle{Integration of the native Android application testing into Arquillian framework}
+\thesistitle{Arquillian testing platform support for Android web and native applications}
 \thesissubtitle{Diploma thesis}
 \thesisstudent{\foreignlanguage{slovak}{Bc. \v{S}tefan Miklo\v{s}ovi\v{c}}}
 \thesiswoman{false}
@@ -57,18 +57,20 @@
 \end{ThesisDeclaration}
 
 \begin{ThesisThanks}
-I would like to thank Karel Piwko, my leader in Red Hat Inc., for his valuable advises and insights during writing this thesis which helped me to understand the internal working of Arquillian framework a lot better. My thanks are going to Aslak Knutsen from Red Hat Inc. too for the similar reasons. Last but not least, I want to thank Chelsea~Cavlovic for her patience, who, as a native speaker, always helpfully answered my English language-related questions.
- 
+I would like to thank Karel Piwko, my leader in Red Hat Inc., for his valuable advices and insights during writing this thesis which helped me to understand the internal working of Arquillian framework a lot better. My thanks are going to Aslak Knutsen from Red Hat Inc. for the similar reasons.
 \end{ThesisThanks}
 
 \begin{ThesisAbstract}
-The aim of this thesis is to design and implement an Arquillian container for Android devices, which is used during functional tests of web applications running at enterprise application servers as well as during functional tests of native Android applications which are running locally at virtual or physical Android device.
+The aim of this thesis is to design and implement an Arquillian container for Android devices, which is used during functional tests of web applications running at enterprise application servers. Investigation of integration testing of native Android applications via implemented Arquillian Android container is presented	.
+
+This thesis is offered within the project ''Platform for cooperation in research and education with FI
+MU in data processing'', registration number CZ.1.07/2.4.00/12.0049, in conjunction with activities of
+the Association of Industrial Partners.
 \end{ThesisAbstract}
 
 \begin{ThesisKeyWords}
-Arquillian, Android, ShrinkWrap, testing, functional, container, extension, JBoss, enterprise, Drone, JavaEE
+Arquillian, container, Android, ShrinkWrap, testing, functional, integration, extension, JBoss, enterprise, Drone, JavaEE
 \end{ThesisKeyWords}
-
 
 \clearpage
 \thispagestyle{plain}
@@ -88,11 +90,11 @@ Besides the unit testing as the very basic principle of testing, integration and
 
 While trying to doing so, we realize very early that it is not easy task and in lot of cases not even possible. The reason is that we are are trying to bring the whole runtime into our test so we are orchestrating all layers trying to fake the original target environment in which our product will be running. The orchestrating and faking all complex enterprise services as dependency injection, messaging or database performance and simulating system errors and communication between multiple entities in our software solution is heroic work and it is not possible to simulate exactly the same scenario multiple times and repeatedly.
 
-This thesis aims to improve functionality and integration testing of web and native Android applications on JBoss platform cooperating with Android platform. The crucial role in the functional and integration testing plays Arquillian testing framework.
+This thesis aims to improve functional and integration testing of web and native Android applications on JBoss platform cooperating with Android platform. The crucial role in the functional and integration testing plays Arquillian testing platform.
 
-Arquillian is a tool, which gets rid of aforementioned impossibilities of testing cases. The core principle which stands behind Arquillian is the philosophy of bringing the tests into target runtime and not otherwise - the typical way of dealing with tests so far. This simple switching of point of view makes whole enterprise testing in JavaEE revolutionary. 
+Arquillian testing platform provides a way by which we can get rid of aforementioned impossibilities of testing cases. The core principle which stands behind Arquillian is the philosophy of bringing the tests into target runtime and not otherwise - the typical way of dealing with tests so far. This simple switching of point of view makes whole enterprise testing in JavaEE revolutionary. 
 
-It is important to realize the essential component without which testing by Arquillian would be meaningless is so called application container or application server. The application container is a place where, roughly speaking, application is deployed and made accessible for users. Arquillian is container agnostic, which means it does not matter against what target environment the application is tested.
+It is important to realize the essential component without which testing by Arquillian would be meaningless - application container or application server. The application container is a place where, roughly speaking, application is deployed and made accessible for users. Arquillian is container agnostic, which means it does not matter against what target environment the application is tested.
 
 Arquillian is not only a tool for rigid testing of enterprise services and technologies but it also provides a way how to make testing via automating web browser in case we are trying to test web application. There are already solutions how to automate web browser such as Selenium - the pioneer of automated testing frameworks. JBoss community developed a tool which is based on Selenium of name Arquillian Graphene. Arquillian Graphene is designed as set of extensions for Selenium WebDriver.
 
@@ -130,17 +132,18 @@ On the other hand, these types of development processes are suitable for project
 
 	\section{Iterative development process}
 
-Iterative development processes can be view as direct opposite of sequential ones. Functionality is added by iterations, from very basic to more advanced, from simple to more complex. In this section, we will discuss two approaches which are very popular among iterative development processes. Tests coders are preparing while they are developing the actual application is the activity which is these days not considered to be only the side effect and the evil which has to be eventually done, but it is a way and strategy how to develop as such. This approach to the developing has of course its name - test driven development (TDD). Test driven development plays very nicely with another very popular term which symbolizes whole principle of coding - eXtreme Programming (XP).
+Iterative development processes can be viewed as direct opposite of sequential ones. Functionality is added by iterations, from very basic to more advanced, from simple to more complex. In this section, we will discuss two approaches which are very popular among iterative development processes. Tests coders are preparing while they are developing the actual application is the activity which is these days not considered to be only the side effect and the evil which has to be eventually done, but it is a way and strategy how to develop as such. This approach to the developing is called test driven development (TDD). Test driven development plays very nicely with another very popular term which symbolizes whole principle of coding - eXtreme Programming (XP).
 
 	\subsection{Test driven development}
-Test driven development is a way of programming when you are writing your tests first and before any single line of code of the target application is written. The first step is to quickly add a test which has to fail upon first run. Only when test is written, you write the application code and run that test against what is written so far to get rid of failing test and have the test which passes. If we run the code and that code is still failing, we have to return back to coding, repair the code and we have to run tests once again. Only when tests are passing, we can write other tests which test different functionality and do the same process again.
+Test driven development is a way of programming when you are writing your tests firstly and before any single line of code of the target application is written. The first step is to add quickly a test which has to fail upon first run. Only when a test is written, you write the application code and run that test against what is written so far to get rid of failing test and have the test which passes. If we run the code and that code is still failing, we have to return back to coding, repair the code and run tests once again. Only when tests are passing, we can write other tests which test different functionality and do the same process again.
 
-The process just described is called TFD (test-first development). Test driven development is understood as a TFD with refactoring. This approach to coding process is completely different from what majority of programmers are used to. The traditional view is to code some subset of the functionality and then to write tests to see if it fail or passes and react accordingly. The importance of getting tests written first is in the way how we think about the design of the application. We are trying to make our design the best possible in advance thinking about how some particular design is going to be helpful for us. TDD is the opposite. We are focusing on new functions so every other functionality added constantly improves our design and just fits our needs.
+The process just described is called TFD (test-first development). Test driven development is understood as a TFD with refactoring. This approach to coding process is completely different from what majority of programmers are used to. The traditional view is to code some subset of the functionality and then to write tests to see if it fails or passes and react accordingly. The importance of getting tests written in advance is in the way how we think about the design of the application. We are trying to make our design the best possible in advance thinking about how some particular design is going to be helpful for us. TDD calls for the opposite way. We are focusing on new functions so every other functionality added constantly improves our design and just fits our needs.
 
-There are two levels of TDD
+\newpage
+There are two levels of TDD:
 
 \begin{itemize}
-	\item{\textbf{Acceptance TDD (ATDD):}} With this approach, we are writing single acceptance test and just enough production code to fulfill that test. The goal of ATDD is to specify detailed, executable requirements for our solution on a just in time (JIT) basis. ATDD is also called Behavior Driven Development (BDD).
+	\item{\textbf{Acceptance TDD (ATDD):}} With this approach, we are writing single acceptance test and just enough production code to satisfy that test. The goal of ATDD is to specify detailed, executable requirements for our solution on a just in time (JIT) basis. ATDD is also called Behavior Driven Development (BDD).
 	\item{\textbf{Developer TDD:}} With developer TDD we write a single developer test, sometimes inaccurately referred to as a unit test, and then just enough production code to fulfill that test. The goal of developer TDD is to specify a detailed, executable design for our solution on a JIT basis.  Developer TDD is often simply called TDD.
 \end{itemize}
 
@@ -149,8 +152,8 @@ The result of programming TDD way can be summarized in these points:
 \begin{itemize}
 	\item{Our development environment must provide rapid response to small changes.}
 	\item{Unit tests has to run fast (they have short setups, run times, and break downs).}
-	\item{Unit tests run in isolation, we should be able to reorder them.}
-	\item{Tests are using real data}
+	\item{Unit tests run in isolation, we should be able to reorder them and no test is dependent on the other.}
+	\item{Tests are using real data and are executed in simulated production environment.}
 \end{itemize}	
 
 	\subsection{Extreme Programming}
@@ -162,15 +165,14 @@ When developer team starts to work on some project, the very typi\-cal beginning
 
 For these reasons, the typical scenario mentioned in the sequential models, which is to consult everything in advance, is flawed and not sufficient. It is often the case that after the customer declares what he wants and the consulting is done, the second time we face the customer is upon final delivery of the product. In the extreme programming paradigm, the customer is the essential part of the developing process and he is participating all the time application is under construction. Of course, one has to design and plan at least something, there has to be clear borders e.g. the problem domain the application will be dealing with, but every further details of how it should be done later are meaningless.
 
-The extreme way of programming is also about doing plans, for sure. We are planning, indeed, but the strongest attitude can be sum up in the slogan "Do the Simplest Thing that Could Possibly Work" and the abbreviation YAGNI which stands for "You Are not Going to Need It".
+The extreme way of programming is also about doing plans but the strongest attitude can be sum up in the slogan "Do the Simplest Thing that Could Possibly Work" and the abbreviation YAGNI which stands for "You Are not Going to Need It".
 
-While the meaning of the first phrase is clear, the mentioned abbreviation has to be clarified. When we are developing the application, we are very often ending up with the design which is over-engineered and after completion of some problem, we have coded infrastructure for solving problems which do not even exist yet and we provided functionality which is not necessary. We likely think that by coding a lot in advance, we will be free from implementing it once there will be the need to do so. We are keeping doors widely open to hook and modify almost everything or at least with the smallest pain. But the question is - what if that situation will never happen? By implementing the functionality we do not need, we will face two very probable outcomes. The~first is the need of taking care of the unused code and pulling it all the development way with us which adds additional complexity to the  existing code and by this way it becomes more error prone. The second is the fact that our imagination of what user wants is completely out of range so we are wasting the time.
+While the meaning of the first phrase is clear, the mentioned abbreviation has to be clarified. When we are developing the application, we are very often ending up with the design which is over-engineered and after completion of some problem, we have coded infrastructure for solving problems which do not even exist yet and we provided functionality which is not necessary. We likely think that by coding a lot in advance, we will be free from implementing it once there will be the need to do so. We are keeping doors widely open to hook and modify almost everything or at least with the smallest pain. But the question is - what if that situation never happen? By implementing the functionality we do not need, we will face two very probable outcomes. The~first is the need of taking care of the unused code and pulling it all the way with us while we develop which adds additional complexity to the  existing code and by this way it becomes more error prone. The second is the fact that our imagination of what user wants is completely out of range so we are wasting the time.
 
-The key concepts of the extreme programming can be sum in the following points:
+The key concepts of the extreme programming can be summed up in the following points:
 \begin{itemize}
-	\item make frequent small releases
-	\item the project is divided into iterations
-	\item simplicity
+	\item make frequent and small releases
+	\item a project is divided into iterations
 	\item no functionality is added early
 	\item refactor whenever possible
 	\item code the unit test first
@@ -179,15 +181,15 @@ The key concepts of the extreme programming can be sum in the following points:
 	\item when a bug is found, tests are created
 \end{itemize}   
 
-Extreme programming suffer from some drawbacks too. Extreme programming is more code-centered then design-centered so it is more suitable for smaller projects or in projects which do not span over more development teams. Using extreme programming in such scenario would be more counterproductive then useful. Since extreme programming lacks design documentation because it varies constantly, we are short of reuse opportunities. Extreme programming does not maintain quality plan. Having such plan reduces time reserved for testing. Extreme programming spends huge amount of time on testing process. 
+Extreme programming suffers from some drawbacks too. Extreme programming is more code-centered then design-centered so it is more suitable for smaller projects or in projects which do not span over more development teams. Using extreme programming in such scenario would be more counterproductive then useful. Since extreme programming lacks design documentation in the great detail because it varies constantly, we are short of reuse opportunities. Extreme programming does not maintain quality plan. Having of such plan reduces time reserved for testing. Extreme programming spends huge amount of time on testing process. 
 
 In spite of mentioned drawbacks, extreme programming can be successful because it focuses on the customer's satisfaction in every moment. We could know that some feature will be needed in the future, but we are not going to implement it right now, even it is very easy to introduce and implement, because it is not necessary in the present moment. When the time comes, the code can be refactored and missing functions added and it does not matter if we are in the late period of the life cycle of the product. The architecture and design of the project or its part is kept as simple as possible so further modifications and additions can be done over the skeletal design - enabling continuous refactoring.
 
 	\section{Necessity of continuous integration}
 	
-Both models of software developing we discussed earlier - sequential development process which representative is the waterfall model and iterative development models as TDD and XP, have to integrate the functionality and code into the already existing code base.
+Both models of software developing we discussed earlier - sequential development process which of representative is the waterfall model and iterative development models as TDD and XP - have to integrate the functionality and code into the already existing code base.
 
-While in the sequential development process the integration phase is standalone, long term and time consuming event, it is often only the bad practice and habit why it is so. The key to the successful and painless development scenario is to integrate part by part, code by code and day by day as iterative approach suggests. This approach is rarely taken in case of sequential development. On the other hand, TDD and XP approach is very suitable for so called continuous integration. We will describe what continuous integration (CI) is and how can be helpful in both development models mentioned in the previous sections.
+While in the sequential development process the integration phase is standalone, long term and time consuming event, it is often only the bad practice and habit why it is so. The key to the successful and painless development scenario is to integrate part by part, code by code and day by day as iterative approach suggests. This approach is rarely taken in the case of sequential development. On the other hand, TDD and XP approach is very suitable for so called continuous integration. We will describe what continuous integration (CI) is and how can be helpful in both development models mentioned in the previous sections.
 
 We can explain continuous integration process on the example in context of XP as well as waterfall on the next figure:
 
@@ -198,17 +200,19 @@ We can explain continuous integration process on the example in context of XP as
 	\label{fig:ci_process}
 \end{figure}
 
-The very first necessity in order to do CI is to have a central place where the all source code and resources necessary to build and run the project are stored. It is important to realize that a source code repository should contain everything in order to build the project successfully that is not only source code itself but whole tools, scripts and resources. In the ideal state, we should check out the code from the repository on the clean (developer) machine and run tests, build application and run it from scratch. The most popular distributed source code repository nowadays is Git, so a reader can bear in mind this kind of repository while reading further.
+\newpage
 
-When a developer clone the repository or when he update his local repository to the newest commit to synchronize his local repository with the main repository, he starts to add a functionality into the code. It does not matter what kind of functionality or change it is really, but let's say, for the sake of argument, he is trying to add some business functionality or fulfill some user's story card.
+The very first goal in order to do CI is to have a central place where the all source code and resources necessary to build and run the project are stored. It is important to realize that a source code repository should contain everything in order to build the project successfully and not only source code itself but whole tools, scripts and resources. In the ideal state, we should check out the code from the repository on the clean (developer) machine and run tests, build application and run it from scratch. The most popular distributed source code repository nowadays is Git, so a reader can bear in mind this kind of repository while reading further.
 
-While doing so, he writes the tests, as the TDD approach is advising, builds the project locally, ensures himself that tests which verifies the new functionality are failing and starts to implement what is necessary.
+When a developer clones a repository or when he updates his local repository to the newest commit to synchronize his local repository with the main repository, he starts to add a functionality into the code. It does not matter what kind of functionality or change it is really, but let's say, for the sake of the argument, he is trying to add some business functionality or fulfill some user's story card.
+
+While doing so, he writes the tests, as the TDD approach is advising, builds the project locally, ensures himself that tests which verify new functionality are failing and starts to implement what is necessary.
 
 He builds the whole project or module of the application as he develops, checking his progress. He repeats this process while tests are failing. When they stop to do so, it is a sign that the functionality is done and he can commit and push to the remote repository where everybody checks the source code from.
 
-By committing to the remote repository, his work is done only partly. It is so because there is a continuous integration server which fetches the whole repository, build the project and runs all tests again.
+By committing to the remote repository, his work is done only partially. It is so because there is a continuous integration server which fetches the whole repository, build the project and runs all tests again.
 
-The necessity of continuous integration server in determined by distributed nature of the source code repository. More then one developer can check the source code so more then one developer can work on the project simultaneously which means that after both developers commit their work, after resolving possible clashes which originate from the work of both of them, we have to build and test once again since there can be still possibility that some artifacts or resources are not pushed to the repository so build which is run externally from development machine can fail.
+The necessity of continuous integration server is determined by distributed nature of the source code repository. More then one developer can check the source code so more then one developer can work on the project simultaneously which means that after both developers commit their work, after resolving possible clashes which originate from the work of both of them, we have to build and test once again since there can be still a possibility that some artifacts or resources are not pushed to the repository so build which is run externally from development machine can fail.
 
 Activities related to the continuous integration can be handled automatically or manually. Automatic builds can be executed on some preferred interval or when changes in the main repository are detected.
 
@@ -227,7 +231,7 @@ As mentioned earlier, source code can be tracked in Git but other source code re
 
 The automation of the builds can be provided by Java building tool called Maven. The role of the continuous server can be handled by the Java software component called Jenkins.
 
-It is clear that the main stress will be put on the fact that the builds and tests have to be done fast because they are done frequently. If our builds, functional and integration tests took tens of minutes or hours, it would be useless to use the TDD and XP in the JavaEE development. Tests are driving the development. Testing \emph{is} development. We are doing incremental changes, we are adding functionality frequently and piece by piece and we also integrate on-the-fly so we know better every moment how is our project doing which is only hardly doable in the sequential development model when the integration exhibits at the end of the implementation and refactoring of the code is very hard. Continuous integration process encourages to do smaller steps and checking how we are doing, keeping the overview of the project up to date.
+It is clear that the main stress will be put on the fact that the builds and tests have to be done fast because they are done frequently. If our builds, functional and integration tests took tens of minutes or hours, it would be useless to use the TDD and XP in the JavaEE development. Tests are driving the development. Testing \emph{is} development. We are doing incremental changes, we are adding functionality frequently and piece by piece and we also integrate on-the-fly so we know better every moment how is our project doing which is only hardly doable in the sequential development model when the integration exhibits at the end of the implementation and refactoring of the code is very hard. Continuous integration process encourages to do smaller steps and to check how we are doing, keeping the overview of the project up to date.
 
 We are also trying to do all the tests in the target environment so we need take our tests to the runtime and not otherwise as it was discussed in the previous sections.
 
