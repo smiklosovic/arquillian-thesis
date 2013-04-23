@@ -247,8 +247,49 @@ We are also trying to do all the tests in the target environment so we need take
 		\subsection{WebDriver}
 
 \chapter{Arquillian overview}
+
 	\section{Introduction}
+
+In previous chapters, a reader was introduced to various development methodologies and their pro et contra was given. There was also brief summary of existing tools in Java ecosystem which are used for testing and project management.
+
+In the upcoming chapter, a reader will be introduced to the concept of Arquillian way of testing, how tests supposed to be run with Arquillian look like and how Arquillian uses abstraction of containers and micro deployments to be able to run tests in real enterprise environment.
+
+This chapter introduces Arquillian testing platform for the integration and functional testing. Arquillian aims to make integration testing a very easy process. Arquillian is a revolutionary testing platform. It enables developer to test his code as he codes in the real production environment so he is not forced to do unit testing or mocking of the classes. He just tests his code by using it. Arquillian testing platform is not only testing tool which makes testing process of TDD development as such so easy, but it is also the educational tool.
+
+By saying that Arquillian is also an educational tool, we mean that the developer can experience how his code will be used in the production environment. He is using the API of the tool or the library directly so not only there is a sureness that the code is doing what it is expecting to do, but the programmer has also overall insight of how just finished code is doing, before it is pushed to the common source code repository used by continuous integration server mentioned in the previous chapter.
+
+
+	\subsection{Why Arquillian?}
+
+When a developer wants to test his business component in Java EE environment and he uses testing tools like JUnit or Mockito, he really early realizes that it is not easy task to do at all. The reason why it is so is that he tries to bring whole runtime environment into the test context so he is doomed to fake all services which will run in the production environment. This is not an easy task to do if not impossible at all.
+
+Let's say developer finished some authorization features for an enterprise product. Now, when functionality is done, it's time to test it. In the very simple scenario, the authorization module has to have database connectivity in order to verify credentials of the potential user of the software, then he has to use some identity management component to be sure that user can do only authorized operations and those which are not allowed are banned. There has to be also a logging backend which tracks from where, when and how this particular user was logged in. Not even speaking about features like dependency injection or transaction control.
+
+How does developer deal with this very unpleasant task? Does it mean, when taking conventional testing tools as JUnit or Mockito in consideration, that he needs to mock almost everything so tests does not recognize they do not run in production environment but in faked one? We see very clearly that treating any non-trivial integration tests this way is no way to go. Developer is burdened with plethora of services he needs to bring to tests runtime that it is unlikely this approach will not be error prone or even doable.
+	
+Arquillian switched the whole view of how integration testing is done. Instead of bringing enterprise services to tests, it is bringing tests into enterprise environment. A developer writes tests which run in target environment, exactly simulating the behavior of the component when it is put under real operation.
+
+The whole idea of previous testing paradigm was to test software in a such way we want to be sure that once the software we are testing is put into production, it will behave correctly and as expected. Arquillian skipped this process. It just tests the validity of the software by direct execution in the target environment and it is making assertions in the production-like runtime. Once these tests passed and required functionality is met, we are sure our software will do so in real production as well.
+
 	\section{Core principles}
+	
+Arquillian is not a from-scratch project, it reuses various already existing tools and glues them together so the previous functionality is present. Arquillain uses three components:
+
+\begin{itemize}
+\item{JUnit testing framework}
+\item{ShrinkWrap packaging tool}
+\item{Java EE compliant enterprise servers}
+\end{itemize}
+
+How these components fits together can be seen on the next figure:
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=60mm]{img/architecture-overview.png}
+	\caption{The Arquillian test infrastructure}
+	\label{fig:arquillian_test_infrastructure}
+\end{figure}
+
 	\section{Principles of the in-container testing}
 	\section{Anatomy of an Arquillian test}
 		\subsection{Arquillian descriptor}
@@ -259,9 +300,6 @@ We are also trying to do all the tests in the target environment so we need take
 	\section{Extensibility of Arquillian}
 		\subsection{Arquillian container API}
 		\subsection{Arquillian SPI}
-
-\chapter{Arquillian extension for Android}
-	\section{Anatomy of the Arquillian extension}
 	
 \chapter{Design of Arquillian container}
 	\chapter{Merging event driven extension into container context}
@@ -271,11 +309,6 @@ We are also trying to do all the tests in the target environment so we need take
 \chapter{Testing of JavaEE application with Android container}
 
 \chapter{Native testing of Android application}
-
-%\chapter{Arquillian}
-%This chapter introduces Arquillian framework for the integration and functional testing. Arquillian aims to make integration testing very easy process. Arquillian is a revolutionary testing framework. It enables developer to test his code as he codes in the real production environment so he is not forced to do unit testing or mocking of the classes. He just tests his code by using it. Arquillian framework is not only testing tool which makes testing process of TDD development as such so easy, but it is also the educational tool.
-
-%By saying that Arquillian is also an educational tool, we mean that the developer can experience how his code will be used in the production environment. He is using the API of the tool or the library directly so not only there is a sureness that the code is doing what it is expecting to do, but the programmer has also overall insight of how just finished code is doing, before it is pushed to the common source code repository used by continuous integration server mentioned in the previous chapter.
 
 %	\section{Arquillian philosophy}
 %When some code is being developed in the iteration of the XP development process, we have to assert that code is eventually working in %the final product environment. The obvious approach to be sure that what we coded behaves properly is to deploy whole applicati
