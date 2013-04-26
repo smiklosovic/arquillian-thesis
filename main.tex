@@ -355,9 +355,19 @@ Dependency can have a parent, in that case, project's \texttt{pom.xml} it is not
 
 Maven is very helpful tool which in Java EE environment enormously simplifies project management, dependency tracking and artifact retrieving and hides complexity of a project dependencies. The managing of a project life cycle would be very time demanding and error prone task since we would have to specify everything manually. 
 
-%\lstinputlisting[language=Java,label=pop-pipe,caption=A test java file]{src/test.java}
-
 		\subsection{ShrinkWrap}
+
+ShrinWrap is very simple but powerful tool. ShrinkWrap is Java library which provides a mechanism for constructing  archives as \texttt{jar}, \texttt{war} or \texttt{ear} programmatically and very easily. This is possible because of fluent API on which ShrinkWrap relies heavily and it is de facto the only way how to use the library. ShrinkWrap is standalone library and it does not depends on any external library. It needs just JRE5+ runtime.
+
+The advantage of using ShrinkWrap is the easiness of creating custom archives. Archive file is built in a memory and written to any target via so called \texttt{exporter} afterwards. Resources which are added to final archive are located on class path.
+
+ShrinkWrap is very sought-after tool since we can exactly specify, class by class and resource by resource, how the deployment to application server will look like and drive very subtle class path isolation. This fact is not true every time. When we are creating the archive, it is common resources and classes which are not needed are bundled into final package as well. This fact can negatively influence functionality and run time of a deployed package e.g. by not finding desired resources or because of some clash. While testing the software, we need to isolate test cases and find the smallest common denominator which satisfies all dependencies and get rid of unused resources. This approach also encourages TDD and unit testing - we are only testing classes we are interested in and we are not taking any garbage which could influence result of the test unpredictably with us. The example of constructing \texttt{jar} file programatically via ShrinkWrap fluent API is following: 
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=ShrinkWrap fluent API]{src/shrinkwrap_archive.java}
+
+The newly created \texttt{jar} file is stored in a generic \texttt{Archive} at line 5. The entry point to dealing with the library is \texttt{ShrinkWrap} class. We specify we want to create \texttt{JavaArchive}. This class has to extend generic \texttt{Archive} class (line 3). After these information, we are simply adding classes, packages or resources as manifest files into the archive, which will be persisted in \texttt{test.jar}.
+
+Creating deployable archives with ShrinkWrap is very convenient way how to precisely specify and construct an archive which just meets our needs. We are able to put everything we want into the archive under the construction so we can bundle there our own resources at will as well as we can isolate or delete any resources and classes we want in order to strip an archive to bare deployable minimum.
 
 		\subsection{Jenkins}
 
@@ -366,7 +376,7 @@ how testing is done, what connections does it have regarding to testing
 	\section{Traditional testing techniques}
 		\subsection{JUnit}
 		
-what it is, unit testing, how unit tests should be written, simple unit test + explain		
+what it is, unit testing, how unit tests should be written, simple unit test + explain		testing, how unit tests should be written, simple unit test + explain
 		
 		\subsection{Mocking}
 
