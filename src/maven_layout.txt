@@ -1,0 +1,10 @@
+.
+|-- pom.xml           # Maven POM file
+|-- src               # project itself
+|   |-- main          # main project sources
+|   |   |-- java      # project source code
+|   |   \-- resources # project resources
+|   \-- test          # testing code for main source
+|       |-- java      # test sources
+|       \-- resources # test resources
+\-- target            # result of build

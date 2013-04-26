@@ -18,6 +18,94 @@
 
 \hyphenation{da-ta-base hy-po-nym me-ro-nym me-ta-da-ta HTMLCleaner}
 
+% syntax highlighting
+
+\newcommand{\bb}[1]{\textbf{#1}}
+\newcommand{\code}[1]{\emph{#1}}
+\newcommand{\n}{\lstinline|\n|}
+
+\definecolor{javared}{rgb}{0.6,0,0} % for strings
+\definecolor{javagreen}{rgb}{0.25,0.5,0.35} % comments
+\definecolor{javapurple}{rgb}{0.5,0,0.35} % keywords
+\definecolor{javadocblue}{rgb}{0.25,0.35,0.75} % javadoc
+\definecolor{bashnormal}{rgb}{0.0,0.0,0.0} % bash
+
+\lstdefinestyle{command} {
+	language=bash,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{bashnormal}\bfseries,
+	stringstyle=\color{javared},
+	commentstyle=\color{javagreen},
+	numbers=none,
+	numberstyle=\tiny\color{black},
+	stepnumber=1,
+	numbersep=5pt,
+	tabsize=2,
+	showspaces=false,
+	showstringspaces=false,
+	breaklines=true,
+	captionpos=b
+}
+
+\lstset{style=command}
+
+\lstdefinestyle{text} {
+	language=bash,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{bashnormal}\bfseries,
+	stringstyle=\color{javared},
+	commentstyle=\color{javagreen},
+	numbers=none,
+	numberstyle=\tiny\color{black},
+	stepnumber=1,
+	numbersep=5pt,
+	tabsize=2,
+	showspaces=false,
+	showstringspaces=false,
+	breaklines=true,
+	captionpos=b
+}
+
+\lstset{style=text}
+
+\lstset{
+	language=XML,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{blue},
+	stringstyle=\color{black},
+	commentstyle=\color{javagreen},
+	morecomment=[s][\color{javadocblue}]{<!--}{-->},
+	morekeywords={project},
+	identifierstyle=\color{black},
+	numbers=left,
+	numberstyle=\tiny\color{black},
+	stepnumber=1,
+	numbersep=5pt,
+	tabsize=2,
+	showspaces=false,
+	showstringspaces=false,
+	breaklines=true,
+	captionpos=b
+}
+
+\lstset{
+	language=Java,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{javapurple}\bfseries,
+	stringstyle=\color{javared},
+	commentstyle=\color{javagreen},
+	morecomment=[s][\color{javadocblue}]{/**}{*/},
+	numbers=left,
+	numberstyle=\tiny\color{black},
+	stepnumber=1,
+	numbersep=5pt,
+	tabsize=2,
+	showspaces=false,
+	showstringspaces=false
+	breaklines=true
+	captionpos=b
+}
+
 \makeindex
 
 \thesistitle{Arquillian testing platform support for Android web and native applications}
@@ -30,23 +118,6 @@
 \thesislang{en}
 
 \begin{document}
-
-\newcommand{\bb}[1]{\textbf{#1}}
-\newcommand{\code}[1]{\emph{#1}}
-\newcommand{\n}{\lstinline|\n|}
-
-\definecolor{codebg}{HTML}{EEEEEE}
-\definecolor{codeframe}{HTML}{CCCCCC}
-
-\lstset{language=Awk}
-\lstset{backgroundcolor=\color{codebg}}
-\lstset{frame=single}
-\lstset{framesep=10pt}
-\lstset{rulecolor=\color{codeframe}}
-\lstset{upquote=true}
-\lstset{basicstyle=\ttfamily}
-
-\lstset{emph={awk}, emphstyle=\textbf}
 
 \FrontMatter
 \ThesisTitlePage
@@ -237,14 +308,78 @@ We are also trying to do all the tests in the target environment so we need take
 
 \chapter{Testing in JavaEE environment}
 
+The next chapter will discuss existing tools and techniques which are used in connection with testing process and infrastructure in Java EE environment. We are dividing these tools which will help us to describe the context of Arquillian testing into three categories. These tools and software compilations are helpful for ongoing explanation of Arquillian testing platform and a reader will be prepared to understand whole model of Arquillian testing much better and smoother.
+
+	\section{Tools used in JavaEE environment}
+	
+		\subsection{Maven}
+
+Maven is so-called build automation tool. Maven is written in Java programming language and it is massively used in Java ecosystem. The main purpose of Maven is to describe the software project - its build, its development, testing and release life cycle and other projects on which our project is dependent with version management in mind.
+
+By default, for every Maven-based project, the structure of directories is the same for all of them. 
+In source-related directories, Java packages are saved. The default directory layout for a project is as follows:
+
+\lstinputlisting[style=text,caption=A Maven project directory layout]{src/maven_layout.txt}
+
+A typical Maven build life cycle consists of sequence of phases - \texttt{prepare-resources},\texttt{compile},\texttt{package},\texttt{install}. There are always \texttt{pre} and \texttt{post} phases which can be used to register \texttt{goals} which must run prior or after a particular phase.
+
+Maven has following three predefined life cycles - \texttt{clean}, \texttt{default} and \texttt{site}. \texttt{clean} life cycle cleans a project, \texttt{default} life cycle builds a project and \texttt{site} life cycle builds into \texttt{target} directory complete web site representation of a project as it generates e.g. Java documentation (javadocs).
+
+A \texttt{goal} represents a specific load of work a plugin has to execute and doing so contributes to the building and managing of a project. The order of goals is defined by default settings which could be overridden~- we can easily define our own actions which are being to be executed upon project build. The order of execution depends on the order we specify phases and goals on the command line.
+
+Maven is mostly ridden by command line command \texttt{mvn} after which phases and goals follow. Phases and 
+goals can be chained. A goal of some plugin can be executed as:
+
+\lstinputlisting[style=command]{src/maven_execution.sh}
+
+For example, when we want to clean project, to delete the build, we have to trigger \texttt{clean} phase. This 
+phase deletes \texttt{target} directory, by default. If we want to build sources and make a \texttt{jar} package, we need to invoke \texttt{package} phase. Since goals can be chained, we execute:
+
+\lstinputlisting[style=command]{src/maven_clean_package.sh}
+
+When specifying \texttt{package} phase, all goals and phases which proceed this phase are executed as well. For example, \texttt{test} phase is executed after \texttt{compile} phase but before \texttt{package} phase, so we are sure tests are executed and software does what it is supposed to do before package is created.
+
+The second very important role of Maven is to track \textit{dependencies}. Dependencies are stored in \textit{repositories}. By default, dependencies are downloaded from main Maven repository\footnote{http://search.maven.org/}. After downloading dependencies we need to satisfy our project with, they are stored in a cache repository at a development computer so that way there is no need to download them over and over again. A dependency is an \textit{artifact} which has exact and unique \textit{coordinates} over all dependencies. Every artifact has coordinates of the form:
+\begin{center}
+	\begin{minipage}{.7\textwidth}
+		\lstinputlisting[style=command]{src/dependency_coordinates}
+	\end{minipage}
+\end{center}
+Every artifact belongs to some group. This is reflected via \texttt{groupId} element. An artifact can have different versions. We can not import two same dependencies each with different version. \texttt{packaging} element specifies how project is packaged. The most common values are \texttt{jar} or \texttt{pom}.
+
+All project definition is stored in file \texttt{pom.xml}. Maven finds \texttt{pom.xml} automatically when invoked in the same directory as \texttt{pom.xml} is saved. The very basic \texttt{pom.xml} file for the illustration purposes to reflect written previously is following:
+
+\lstinputlisting[language=XML,label=pop-pipe,caption=A simple pom.xml file]{src/pom_example.xml}
+
+Dependency can have a parent, in that case, project's \texttt{pom.xml} it is not a \textit{top-level} \texttt{pom.xml}. A parent normally serves as an aggregator of different artifacts which are logically grouped but each artifact has its own responsibility and specific meaning in a project. After parent definition, coordinates of an artifact follows and finally we see this artifact depends on \texttt{junit} artifact of particular version and \texttt{scope}. When \texttt{scope} is not defined, it means that dependency is on classpath during compilation time, when \texttt{scope} is set to \texttt{test}, it means this dependency will be on classpath only during testing phase of the project - when we execute Maven as \texttt{mvn test}.
+
+Maven is very helpful tool which in Java EE environment enormously simplifies project management, dependency tracking and artifact retrieving and hides complexity of a project dependencies. The managing of a project life cycle would be very time demanding and error prone task since we would have to specify everything manually. 
+
+%\lstinputlisting[language=Java,label=pop-pipe,caption=A test java file]{src/test.java}
+
+		\subsection{ShrinkWrap}
+
+		\subsection{Jenkins}
+
+how testing is done, what connections does it have regarding to testing
+
 	\section{Traditional testing techniques}
 		\subsection{JUnit}
 		
-		\subsection{Concept of mocking}
+what it is, unit testing, how unit tests should be written, simple unit test + explain		
+		
+		\subsection{Mocking}
+
+what and why it does it exist, how it is working on top of junit
 
 	\section{Functional testing of Java web applications}
 		\subsection{Selenium}
+
+What selenium is, how it is used, that it drives browser, 		
+		
 		\subsection{WebDriver}
+
+graphene, webdriver, from redhat, on top of selenium, jboss oriented
 
 \chapter{Arquillian overview}
 
@@ -290,13 +425,21 @@ How these components fits together can be seen on the next figure:
 	\label{fig:arquillian_test_infrastructure}
 \end{figure}
 
-	\section{Principles of the in-container testing}
+	\section{Arquillian containers}
+		\subsection{Remote container}
+		\subsection{Managed container}
+		\subsection{Embedded container}
+		
+	\section{Arquillian running modes}
+		\subsection{Client mode}
+		\subsection{In-container mode}
+
 	\section{Anatomy of an Arquillian test}
 		\subsection{Arquillian descriptor}
 		\subsection{Arquillian test}
 		\subsection{Deployment}
-			\subsubsection{ShrinkWrap}
-		\subsection{Test enrichment}
+	\section{Test lifecycle}
+	\section{Test enrichment}
 	\section{Extensibility of Arquillian}
 		\subsection{Arquillian container API}
 		\subsection{Arquillian SPI}
