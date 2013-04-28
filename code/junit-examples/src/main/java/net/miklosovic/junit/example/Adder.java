@@ -1,14 +1,9 @@
 package net.miklosovic.junit.example;
 
-/**
- * 
- * @author Stefan Miklosovic
- * 
- */
 public class Adder {
 
     /**
-     * Adds two positive number
+     * Adds two positive numbers.
      * 
      * @param a
      * @param b

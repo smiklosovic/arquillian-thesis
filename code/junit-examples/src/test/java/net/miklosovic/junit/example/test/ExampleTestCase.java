@@ -37,7 +37,7 @@ public class ExampleTestCase {
     @Test
     public void addTwoAndTwo() {
         assertNotNull("adder is null!", adder);
-        assertThat(adder.addPositiveNumbers(1, 2), is(3));
+        assertThat(adder.addPositiveNumbers(2, 2), is(4));
     }
     
     @Test(expected = IllegalArgumentException.class)
