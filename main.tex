@@ -347,11 +347,13 @@ The second very important role of Maven is to track \textit{dependencies}. Depen
 \end{center}
 Every artifact belongs to some group. This is reflected via \texttt{groupId} element. An artifact can have different versions. We can not import two same dependencies each with different version. \texttt{packaging} element specifies how project is packaged. The most common values are \texttt{jar} or \texttt{pom}.
 
-All project definition is stored in file \texttt{pom.xml}. Maven finds \texttt{pom.xml} automatically when invoked in the same directory as \texttt{pom.xml} is saved. The very basic \texttt{pom.xml} file for the illustration purposes to reflect written previously is following:
+All project definition is stored in file \texttt{pom.xml} which is a shortcut for \textit{project object management}. Maven finds \texttt{pom.xml} automatically when invoked in the same directory as \texttt{pom.xml} is saved. The very basic \texttt{pom.xml} file for the illustration purposes to reflect written previously is following:
 
 \lstinputlisting[language=XML,label=pop-pipe,caption=A simple pom.xml file]{src/pom_example.xml}
 
 Dependency can have a parent, in that case, project's \texttt{pom.xml} it is not a \textit{top-level} \texttt{pom.xml}. A parent normally serves as an aggregator of different artifacts which are logically grouped but each artifact has its own responsibility and specific meaning in a project. After parent definition, coordinates of an artifact follows and finally we see this artifact depends on \texttt{junit} artifact of particular version and \texttt{scope}. When \texttt{scope} is not defined, it means that dependency is on classpath during compilation time, when \texttt{scope} is set to \texttt{test}, it means this dependency will be on classpath only during testing phase of the project - when we execute Maven as \texttt{mvn test}.
+
+In Maven universe, beside ordinary POM files, there are also so-called \textit{BOM} files. BOM stands for \textit{bill of materials}. It is a POM file where only dependencies are specified so we can easily include BOM dependency into \texttt{pom.xml} and all dependencies which are specified in BOM will be imported to \texttt{pom.xml} as well. We can gather well known group of dependencies and import only one dependency which covers them all in order to provide more brevity and management convenience.
 
 Maven is very helpful tool which in Java EE environment enormously simplifies project management, dependency tracking and artifact retrieving and hides complexity of a project dependencies. The managing of a project life cycle would be very time demanding and error prone task since we would have to specify everything manually. 
 
@@ -388,7 +390,11 @@ Continuous integration system as Jenkins offers the very first prerequisite for 
 	\section{Traditional testing techniques}
 		\subsection{JUnit}
 		
-what it is, unit testing, how unit tests should be written, simple unit test + explain		testing, how unit tests should be written, simple unit test + explain
+After having an arbitrary Java project based on Maven and setting up infrastructure for continuous integration testing via Jenkins, where source code is tracked in distributed source code repository as Git, we need to perform testing itself.
+
+The most popular testing tool for Java is JUnit. JUnit is an instance of the xUnit architecture for unit testing frameworks.\footcite{http://junit.org/}
+
+what it is, unit testing, how unit tests should be written, simple unit test + explain testing, how unit tests should be written, simple unit test + explain
 		
 		\subsection{Mocking}
 
