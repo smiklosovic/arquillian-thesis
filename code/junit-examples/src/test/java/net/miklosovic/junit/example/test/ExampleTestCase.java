@@ -24,7 +24,7 @@ public class ExampleTestCase {
     Adder adder;
 
     @Rule
-    public Timeout globalTimeout = new Timeout(10000);
+    public Timeout globalTimeout = new Timeout(1000);
     
     @Before
     public void beforeTest() {
@@ -43,6 +43,7 @@ public class ExampleTestCase {
     @Test(expected = IllegalArgumentException.class)
     public void notPositive() {
         adder.addPositiveNumbers(-1, -2);
+        fail();
     }
     
     @Ignore @Test public void notPreparedYet() {}
