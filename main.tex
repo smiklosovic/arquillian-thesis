@@ -390,11 +390,35 @@ Continuous integration system as Jenkins offers the very first prerequisite for 
 	\section{Traditional testing techniques}
 		\subsection{JUnit}
 		
-After having an arbitrary Java project based on Maven and setting up infrastructure for continuous integration testing via Jenkins, where source code is tracked in distributed source code repository as Git, we need to perform testing itself.
+After having an arbitrary Java project based on Maven and setting up infrastructure for continuous integration testing via Jenkins, where source code is cloned or checked out from distributed source code repository, we need to perform testing itself. The most popular testing tool for Java is JUnit. JUnit is an instance of the xUnit architecture for unit testing frameworks.\footnote{http://junit.org/}.
 
-The most popular testing tool for Java is JUnit. JUnit is an instance of the xUnit architecture for unit testing frameworks.\footcite{http://junit.org/}
+JUnit tests, as the name of the framework suggests, are meant to be unit tests. As previously stated, in TDD model, which is often used in XP, unit tests are written before the code itself is created so only when tests are passed, code is considered to be finished. The very central point of the unit testing is to show that each part of the program behaves correctly. Only after that, these parts are integrated together.
 
-what it is, unit testing, how unit tests should be written, simple unit test + explain testing, how unit tests should be written, simple unit test + explain
+JUnit is added to Maven-based project as a dependency. All tests reside by default in \texttt{src/test/java} and resources needed for tests under run, if any, are located in \texttt{src/test/resources}. From Maven point of view, tests are executed as \texttt{mvn test}.
+
+The example of simple JUnit test is following. Its core features and life cycle of the test class will be discussed further.
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Example of JUnit test]{src/ExampleTestCase.java}
+
+A unit test is distinguished by JUnit when a test class is annotated with \texttt{@RunWith} annotation. Argument of \texttt{@RunWith} annotation is so-called \textit{test runner}. Test runner specifies how exactly test class, in our example \texttt{ExampleTestCase}, is treated. \texttt{org.junit.runners.JUnit4} is the default runner for JUnit. It extends \texttt{BlockJUnit4ClassRunner} in the same package. Every runner has to extends this base runner. Custom JUnit runners are changing the default behaviour of the test execution.
+
+Every test case consists of particular unit tests. A test is a method annotated with \texttt{@Test}. All tests have to be \texttt{public void} methods without any arguments. The \texttt{@Test} annotation can have the argument \texttt{expected} which tells that this method is expected to result with thrown exception, for example in our case \texttt{IllegalArqumentException} at line 28. We are testing very basic functionality of \texttt{Adder} class which just adds arguments in \texttt{addPositiveNumbers} which input have to be two non-negative numbers, which is not the case. So this method is expected to throw the exception we are catching with \texttt{expected} argument. If, by any chance, our adding method passed, \texttt{fail()} method from JUnit would followed. This method ends test as failed.
+
+Tests can be ignored with \texttt{@Ignore} annontation as shown at line 34. This test will be skipped upon test case execution.
+
+We can define additional actions before and after test case class. These actions are executed once. They are called \textit{test fixtures}. Methods have to be annotated with \texttt{@BeforeClass} and \texttt{AfterClass} respectively. We can also specify what has to be done before and after every particular \texttt{@Test} method by \texttt{@Before} and \texttt{@After} annotation respectively. Class text fixtures have to be static methods.
+
+It is important to realize that before every invocation of \texttt{@Test} method, JUnit instantiates whole new test class so \texttt{Before*} and \texttt{After*} methods are very handy when we do not want to repeat ourselves. We just put common set up into these methods and we are done, as shown in our simple \texttt{@Before} method.
+
+The most common way of testing functionality is via \textit{assertions}. Assertions are placed in \texttt{org.junit.Assert}. It is usefull to import them statically for more brevity. We are using \texttt{assertNotNull} assertion in \texttt{addTwoAndTwo} method which tests that \texttt{Adder} instance is not null before we use it in the following statement.
+
+The next statement is \texttt{assertThat} which uses concepts of \textit{matchers}. It asserts that the result of our adding operation is 4.
+
+We can specify a timeout which represents a time until every test method has to finish. When a test methods exceeds this timeout time, \texttt{TimeoutException} is thrown.
+
+When testing, it is not possible to be sure that \texttt{@Test} methods will be executed in some determined order. Their execution is random in general via every execution of test case because of Java collection API. We can change this behavior with \texttt{FixMethodOrder} annotation at the beginning of test case class.
+
+It is not good testing technique to rely on order of execution of methods. We are doing unit testing where tests should be isolated from each other and do not influence any other test. Every test should be atomic. However, sometimes it is needed to preserve specific execution order. In these cases, we find this feature useful.
 		
 		\subsection{Mocking}
 
