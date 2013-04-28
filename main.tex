@@ -371,7 +371,19 @@ Creating deployable archives with ShrinkWrap is very convenient way how to preci
 
 		\subsection{Jenkins}
 
-how testing is done, what connections does it have regarding to testing
+Jenkins in a continuous integration (CI) tool written in Java language. Jenkins is an open source project. The purpose of Jenkins is to provide continuous integration services for development of a software. In it's core, it is server-based system running in some kind of servlet container as Apache Tomcat.
+
+A testing machines we are testing software under development at are called \textit{slaves nodes}. A slave has various parameters such as amount of memory available, operating system, system architecture, installed versions of Java Virtual Machines and so on. We can then register various integration servers at will and we can specify on which slave nodes we want to test our software according of their capabilities and our requirements. More often we do not specify directly which slave node we want to use. We only tag slave nodes by its capabilities and specify a query via which appropriate nodes are selected automatically.
+
+Tests can be run at more then one slave node since we may want to know if our software is capable of running under various circumstances, e.g. if it works without issues on multiple configurations so we mimic heterogeneous target environment.
+
+After the filtering on which node tests are going to be executed, the actual source code of our interest has to be checked out (or cloned) from central source code repository as Git\footnote{http://git-scm.com/}, SVN\footnote{http://subversion.apache.org/} or Mercurial\footnote{http://mercurial.selenic.com/}.
+
+Build of the tests can be triggered by various means, it can be triggered periodically on some predetermined frequency (e.g. every two hours) or it can be triggered automatically by every commit we push into source code repository. Jenkins uses concept of \textit{downstream} and \textit{upstream} builds so tests or builds of downstream project is triggered when all upstream projects are built and tested without issues. Local copy of source code is cloned at slave node and Jenkins executes tests and reports results back to Jenkins master server.
+
+Jenkins plays significant role in Java EE environment and is very widely known to Java-oriented community. Jenkins plays very well in connection with Maven-based projects. Jenkins can test and build virtually any Java project. There is the effort to make various bindings to support .Net\footnote{http://www.microsoft.com/net} or Scala\footnote{http://www.scala-lang.org/} projects with various success.
+
+Continuous integration system as Jenkins offers the very first prerequisite for successful and painless iterative development and reduces integration testing significantly.
 
 	\section{Traditional testing techniques}
 		\subsection{JUnit}
