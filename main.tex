@@ -387,7 +387,6 @@ Jenkins plays significant role in Java EE environment and is very widely known t
 
 Continuous integration system as Jenkins offers the very first prerequisite for successful and painless iterative development and reduces integration testing significantly.
 
-	\section{Traditional testing techniques}
 		\subsection{JUnit}
 		
 After having an arbitrary Java project based on Maven and setting up infrastructure for continuous integration testing via Jenkins, where source code is cloned or checked out from distributed source code repository, we need to perform testing itself. The most popular testing tool for Java is JUnit. JUnit is an instance of the xUnit architecture for unit testing frameworks.\footnote{http://junit.org/}.
@@ -397,6 +396,8 @@ JUnit tests, as the name of the framework suggests, are meant to be unit tests. 
 JUnit is added to Maven-based project as a dependency. All tests reside by default in \texttt{src/test/java} and resources needed for tests under run, if any, are located in \texttt{src/test/resources}. From Maven point of view, tests are executed as \texttt{mvn test}.
 
 The example of simple JUnit test is following. Its core features and life cycle of the test class will be discussed further.
+
+\newpage
 
 \lstinputlisting[language=Java,label=pop-pipe,caption=Example of JUnit test]{src/ExampleTestCase.java}
 
@@ -419,19 +420,18 @@ We can specify a timeout which represents a time until every test method has to 
 When testing, it is not possible to be sure that \texttt{@Test} methods will be executed in some determined order. Their execution is random in general via every execution of test case because of Java collection API. We can change this behavior with \texttt{FixMethodOrder} annotation at the beginning of test case class.
 
 It is not good testing technique to rely on order of execution of methods. We are doing unit testing where tests should be isolated from each other and do not influence any other test. Every test should be atomic. However, sometimes it is needed to preserve specific execution order. In these cases, we find this feature useful.
-		
-		\subsection{Mocking}
 
-what and why it does it exist, how it is working on top of junit
+	\subsection{Selenium WebDriver}
+	
+Selenium project aims to be able to automatize web browser in a such way there is a possibility to run previously specified exact set of operations at web pages. These scripts are useful for various reason. There are two distinguished  ways how to use Selenium framework. The first one reflects the need for automatization of repeatedly same tasks to save time and reduce errors when done manually. The second one is to run automated tests which ensures a developer that web page responses in a predicted way which is very suitable for unit testing of web applications. Selenium of version 2.0 is integrating WebDriver API to provide more simpler and concise programming interface. WebDriver from Selenium tries to be a reference implementation of WebDriver W3C standard.\footnote{http://www.w3.org/TR/2013/WD-webdriver-20130117/}.
 
-	\section{Functional testing of Java web applications}
-		\subsection{Selenium}
+Selenium WebDriver accepts commands and sends them to a browser. Every browser accepts different commands so then every browser supports different \textit{browser driver}. Selenium starts a browser instance and controls it.
 
-What selenium is, how it is used, that it drives browser, 		
-		
-		\subsection{WebDriver}
+Selenium provides various language bindings including Java.
 
-graphene, webdriver, from redhat, on top of selenium, jboss oriented
+	\subsection{Conclusion}
+	
+In this chapter, we discussed particular tools which are very useful in connection with integration and unit testing. Projects are managed by Maven, we are testing with JUnit. We can specify what to deploy (what to test) via ShrinkWrap and we can write functional tests in Selenium WebDriver. All this runs via Jenkins, possibly at multiple nodes with different configuration. As we develop and make changes to source code, changes are checked out from distributed source code repository and the whole testing process is triggered. 
 
 \chapter{Arquillian overview}
 
@@ -495,13 +495,21 @@ How these components fits together can be seen on the next figure:
 	\section{Extensibility of Arquillian}
 		\subsection{Arquillian container API}
 		\subsection{Arquillian SPI}
-	
+
 \chapter{Design of Arquillian container}
 	\chapter{Merging event driven extension into container context}
 	
 \chapter{Implementation of Arquillian Android container}
 
-\chapter{Testing of JavaEE application with Android container}
+\chapter{Usage of Android container in web testing context}
+
+	\section{Selenium WebDriver}
+	
+	\section{Arquillian Graphene}
+	
+	\section{Arquillian Drone}
+	
+	\section{Web testing with Android container}
 
 \chapter{Native testing of Android application}
 
