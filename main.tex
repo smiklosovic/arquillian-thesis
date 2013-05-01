@@ -441,26 +441,25 @@ In previous chapters, a reader was introduced to various development methodologi
 
 In the upcoming chapter, a reader will be introduced to the concept of Arquillian way of testing, how tests supposed to be run with Arquillian look like and how Arquillian uses abstraction of containers and micro deployments to be able to run tests in real enterprise environment.
 
-This chapter introduces Arquillian testing platform for the integration and functional testing. Arquillian aims to make integration testing a very easy process. Arquillian is a revolutionary testing platform. It enables developer to test his code as he codes in the real production environment so he is not forced to do unit testing or mocking of the classes. He just tests his code by using it. Arquillian testing platform is not only testing tool which makes testing process of TDD development as such so easy, but it is also the educational tool.
+Arquillian is a revolutionary testing platform. It enables developer to test his code as he codes in the real production environment so he is not forced to do unit testing or mocking of the classes. He just tests his code by using it. Arquillian testing platform is not only testing tool which makes testing process of TDD development as such so easy, but it is also the educational tool.
 
-By saying that Arquillian is also an educational tool, we mean that the developer can experience how his code will be used in the production environment. He is using the API of the tool or the library directly so not only there is a sureness that the code is doing what it is expecting to do, but the programmer has also overall insight of how just finished code is doing, before it is pushed to the common source code repository used by continuous integration server mentioned in the previous chapter.
-
+By saying that Arquillian is also an educational tool, we mean that the developer can experience how his code will be used in the production environment. He is using the API of the tool or the library directly so not only there is a sureness that the code is doing what it is expecting to do, but the programmer has also overall insight of how just finished code is doing before it is pushed to the common source code repository used by continuous integration server mentioned in the previous chapter.
 
 	\subsection{Why Arquillian?}
 
-When a developer wants to test his business component in Java EE environment and he uses testing tools like JUnit or Mockito, he really early realizes that it is not easy task to do at all. The reason why it is so is that he tries to bring whole runtime environment into the test context so he is doomed to fake all services which will run in the production environment. This is not an easy task to do if not impossible at all.
+When a developer wants to test his business component in Java EE environment and he uses testing tools like JUnit, he realizes early that it is not an easy task to do at all. The reason why it is so is that he tries to bring whole runtime environment into the test context so he is doomed to fake all services which will run in the production environment. This is not easy, if not impossible at all.
 
-Let's say developer finished some authorization features for an enterprise product. Now, when functionality is done, it's time to test it. In the very simple scenario, the authorization module has to have database connectivity in order to verify credentials of the potential user of the software, then he has to use some identity management component to be sure that user can do only authorized operations and those which are not allowed are banned. There has to be also a logging backend which tracks from where, when and how this particular user was logged in. Not even speaking about features like dependency injection or transaction control.
+Let's say developer finished some authorization features for an enterprise product. Now, when functionality is done, it's time to test it. In the very simple scenario, the authorization module has to have database connectivity in order to verify credentials of the potential user, then he has to use some identity management component to be sure that user can do only authorized operations and those which are not allowed are banned. There has to be also a logging backend which tracks from where, when and how this particular user was logged in. Not even speaking about features like dependency injection or transaction control.
 
-How does developer deal with this very unpleasant task? Does it mean, when taking conventional testing tools as JUnit or Mockito in consideration, that he needs to mock almost everything so tests does not recognize they do not run in production environment but in faked one? We see very clearly that treating any non-trivial integration tests this way is no way to go. Developer is burdened with plethora of services he needs to bring to tests runtime that it is unlikely this approach will not be error prone or even doable.
+How does developer deal with this very unpleasant task? Does it mean, when taking conventional testing tools as JUnit or Mockito\footnote{https://code.google.com/p/mockito/} into consideration, that he needs to mock almost everything so tests does not recognize they do not run in production environment but in faked one? We see very clearly that treating any non-trivial integration tests this way is no way to go. Developer is burdened with plethora of services he needs to bring to runtime of the test that it is likely this approach will be error prone or not even doable.
 	
-Arquillian switched the whole view of how integration testing is done. Instead of bringing enterprise services to tests, it is bringing tests into enterprise environment. A developer writes tests which run in target environment, exactly simulating the behavior of the component when it is put under real operation.
+Arquillian switched the whole view of how integration testing is done. Instead of bringing enterprise services to tests, it is bringing tests into enterprise environment.
 
 The whole idea of previous testing paradigm was to test software in a such way we want to be sure that once the software we are testing is put into production, it will behave correctly and as expected. Arquillian skipped this process. It just tests the validity of the software by direct execution in the target environment and it is making assertions in the production-like runtime. Once these tests passed and required functionality is met, we are sure our software will do so in real production as well.
 
 	\section{Core principles}
 	
-Arquillian is not a from-scratch project, it reuses various already existing tools and glues them together so the previous functionality is present. Arquillain uses three components:
+We add Arquillian into our project via its Maven dependency. Arquillian reuses various already existing tools and glues them together so the previous functionality is present. Arquillian uses three components:
 
 \begin{itemize}
 \item{JUnit testing framework}
@@ -472,29 +471,71 @@ How these components fits together can be seen on the next figure:
 
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[width=60mm]{img/architecture-overview.png}
+	\includegraphics[width=80mm]{img/architecture-overview.png}
 	\caption{The Arquillian test infrastructure}
 	\label{fig:arquillian_test_infrastructure}
 \end{figure}
 
+% stvrtok
+
 	\section{Arquillian containers}
+	
+% co je to a ze moze byt pritomny len jeden adapter a ze sa to prida ako zavislost	
+	
 		\subsection{Remote container}
 		\subsection{Managed container}
-		\subsection{Embedded container}
-		
-	\section{Arquillian running modes}
-		\subsection{Client mode}
-		\subsection{In-container mode}
 
 	\section{Anatomy of an Arquillian test}
 		\subsection{Arquillian descriptor}
+		
+% ze je to arquillian.xml a je v resources
+		
 		\subsection{Arquillian test}
-		\subsection{Deployment}
+
+% priklad jak to vyzera
+% sem patri aj deployment		
+		
+		\subsection{Test execution negotiation}
+
+% ako sa to cele spusti
+
+	\section{Arquillian running modes}
+	
+Arquillian tests run in two modes. They are called \textit{client mode} and \textit{in-container} mode. They are defining the difference of how tests are treated from the container point of view. The explanation of their differences is following.
+
+		\subsection{In-container mode}
+		
+When testing by in-container mode, we are deploying our \texttt{@Deployment} directly into some container and tests are executed in that container - results of the tests are communicated back to Arquillian. By this, way we are testing how our deployment is doing while operating in container context. Arquillian uses in-container mode by default. However, the fact we want to run tests in container is set by \texttt{@Deployment(testable = true)} on our deployment method.
+
+When we want to test in a container, we have to repackage our \texttt{@Deployment} every time so we are able to communicate with tests which are running in other JVM. Communication is carried out via Servlet 3.0 protocol by default for EE6 compliant application servers.
+
+% zistit veci o protokoloch
+
+% zistit co Arquillian pribali k deploymentu 
+
+		\subsection{Client mode}
+
+Client mode does not repackage our \texttt{@Deployment} at all. A deployment is just deployed "as-is" meaning no other modifications are done upon it and Arquillian just deploy the package to a container. We are running tests outside of a container. This mode is useful when we want to see how client would eventually use the application which is deployed in a container from his point of view. This running mode is not used by default - we set it by \texttt{@Deployment(testable = false)}.
+
+		\subsection{Mixing running modes}
+
+It is possible to mix running modes in one test class. When we use \texttt{@Deployment(testable = true)}, deployment is specified and tests are meant to be run in a container. However, when we do want to test from outside of a container, we have to use \texttt{@RunAsClient} annotation on a specific \texttt{@Test} method. By this way, we can assert some service is created in one test (doing it in container context) and we can as well assert that it behaves correctly from client point of view when we interact with this service in \texttt{@Test @RunAsClient} methods.
+
+% piatok
+
 	\section{Test lifecycle}
 	\section{Test enrichment}
+	
+% arquillian resource + api (ResoruceProvider)	
+	
 	\section{Extensibility of Arquillian}
+
+In this section, the extensibility of Arquillian will be described and possible ways how to augment functionality of Arquillian will be shown.
+	
 		\subsection{Arquillian container API}
 		\subsection{Arquillian SPI}
+
+% sobota
 
 \chapter{Design of Arquillian container}
 	\chapter{Merging event driven extension into container context}
