@@ -1,0 +1,10 @@
+<arquillian>
+    <container qualifier="jbossas-A">
+        <configuration>
+            <property name="nameOfProperty">
+                valueOfProperty
+            </property>
+        </configuration>
+    </container>
+    <container qualifier="jbossas-B"/>
+</arquillian>

@@ -437,34 +437,34 @@ In this chapter, we discussed particular tools which are very useful in connecti
 
 	\section{Introduction}
 
-In previous chapters, a reader was introduced to various development methodologies and their pro et contra was given. There was also brief summary of existing tools in Java ecosystem which are used for testing and project management.
+In previous chapters, a reader was introduced to various development methodologies and their pro et contra were given. There was also brief summary of existing tools in Java ecosystem which are used for testing and project management.
 
-In the upcoming chapter, a reader will be introduced to the concept of Arquillian way of testing, how tests supposed to be run with Arquillian look like and how Arquillian uses abstraction of containers and micro deployments to be able to run tests in real enterprise environment.
+In the upcoming chapter, a reader will be introduced to the concept of Arquillian way of testing, how tests supposed to run with Arquillian look like and how Arquillian uses abstraction of containers and micro deployments to be able to run tests in real enterprise environment.
 
 Arquillian is a revolutionary testing platform. It enables developer to test his code as he codes in the real production environment so he is not forced to do unit testing or mocking of the classes. He just tests his code by using it. Arquillian testing platform is not only testing tool which makes testing process of TDD development as such so easy, but it is also the educational tool.
 
-By saying that Arquillian is also an educational tool, we mean that the developer can experience how his code will be used in the production environment. He is using the API of the tool or the library directly so not only there is a sureness that the code is doing what it is expecting to do, but the programmer has also overall insight of how just finished code is doing before it is pushed to the common source code repository used by continuous integration server mentioned in the previous chapter.
+By saying that Arquillian is also an educational tool, we mean that the developer can experience how his code will be used in the production environment. He is using the API of the tool or the library directly so not only there is a sureness that the code is doing what it is expecting to do, but a programmer has also overall insight of how just finished code is doing before it is pushed to the common source code repository used by continuous integration server mentioned in the previous chapter.
 
 	\subsection{Why Arquillian?}
 
 When a developer wants to test his business component in Java EE environment and he uses testing tools like JUnit, he realizes early that it is not an easy task to do at all. The reason why it is so is that he tries to bring whole runtime environment into the test context so he is doomed to fake all services which will run in the production environment. This is not easy, if not impossible at all.
 
-Let's say developer finished some authorization features for an enterprise product. Now, when functionality is done, it's time to test it. In the very simple scenario, the authorization module has to have database connectivity in order to verify credentials of the potential user, then he has to use some identity management component to be sure that user can do only authorized operations and those which are not allowed are banned. There has to be also a logging backend which tracks from where, when and how this particular user was logged in. Not even speaking about features like dependency injection or transaction control.
+Let's say developer finished some authorization features for an enterprise product. In the very simple scenario, the authorization module has to have database connectivity in order to verify credentials of the potential user, then he has to use some identity management component to be sure that user can do only authorized operations and those which are not allowed are banned. There has to be also a logging backend which tracks from where, when and how this particular user was logged in. Not even speaking about features like dependency injection or transaction control.
 
-How does developer deal with this very unpleasant task? Does it mean, when taking conventional testing tools as JUnit or Mockito\footnote{https://code.google.com/p/mockito/} into consideration, that he needs to mock almost everything so tests does not recognize they do not run in production environment but in faked one? We see very clearly that treating any non-trivial integration tests this way is no way to go. Developer is burdened with plethora of services he needs to bring to runtime of the test that it is likely this approach will be error prone or not even doable.
+How does developer deal with this very unpleasant task? Does it mean, when taking conventional testing tools as JUnit or Mockito\footnote{https://code.google.com/p/mockito/} into consideration, that he needs to mock almost everything so tests does not recognize they do not run in production environment but in faked one? We see very clearly that treating any non-trivial integration tests like mentioned is no way to go. Developer is burdened with plethora of services he needs to bring to runtime of the test that it is likely this approach will be error prone or not even doable.
 	
-Arquillian switched the whole view of how integration testing is done. Instead of bringing enterprise services to tests, it is bringing tests into enterprise environment.
+Arquillian switched the whole view of how integration testing is done. Instead of bringing enterprise services to tests, it brings tests into enterprise environment.
 
 The whole idea of previous testing paradigm was to test software in a such way we want to be sure that once the software we are testing is put into production, it will behave correctly and as expected. Arquillian skipped this process. It just tests the validity of the software by direct execution in the target environment and it is making assertions in the production-like runtime. Once these tests passed and required functionality is met, we are sure our software will do so in real production as well.
 
 	\section{Core principles}
 	
-We add Arquillian into our project via its Maven dependency. Arquillian reuses various already existing tools and glues them together so the previous functionality is present. Arquillian uses three components:
+We add Arquillian into our project via its Maven dependency\footnote{org.jboss.arquillian:arquillian-bom:1.0.3.Final:pom}. Arquillian reuses various already existing tools and glues them together so the previous functionality is present. Arquillian uses three components:
 
 \begin{itemize}
-\item{JUnit testing framework}
-\item{ShrinkWrap packaging tool}
-\item{Java EE compliant enterprise servers}
+	\item{JUnit testing framework}
+	\item{ShrinkWrap packaging tool}
+	\item{Java EE compliant enterprise servers}
 \end{itemize}
 
 How these components fits together can be seen on the next figure:
@@ -480,17 +480,43 @@ How these components fits together can be seen on the next figure:
 
 	\section{Arquillian containers}
 	
-% co je to a ze moze byt pritomny len jeden adapter a ze sa to prida ako zavislost	
+Arquillian container is an abstraction used in Arquillian context for a place where application we want to test (deployment) is deployed. Since Arquillian targets Java EE environment, a container is an enterprise application container such as JBoss AS\footnote{http://www.jboss.org/jbossas}, Glassfish\footnote{https://glassfish.java.net/} or similar.
+
+Arquillian interacts with containers via so called \textit{container adapters}. Container adapter is a Maven dependency which implements specific Arquillian SPI and it is able to bridge communication from Arquillian to concrete container implementation. Maven container adapter implementation dependency has to be \texttt{test} scoped so it is present at class path during tests. Every container behaves differently when it comes to deploying, running and undeploying of an application. So then, every container has to have its own container adapter.
+
+Arquillian recognizes three ways how to deal with containers: 
 	
-		\subsection{Remote container}
-		\subsection{Managed container}
+\begin{itemize}
+	\item{Remote container - represents separate JVM where a container runs. Arquillian just connects to this kind of container in order to manage test execution. Life cycle of such container itself is not managed by Arquillian.}
+	\item{Managed container - Arquillian controls all life cycle of a container, starting, stopping and deploying of an application under test. This is basically the same case as remote container is. The only difference is in starting and stopping of a container. Arquillian manages it itself. A managed container is stopped after test execution is done. Same pays for its start.} 
+	\item{Embedded container - resides in the same JVM as Arquillian does.}
+\end{itemize}	
+
+Every container adapter has to implement \texttt{DeployableContainer}\footnote{in org.jboss.arquillian.container.spi.client.container package} interface. Currently, there is allowed to have only one container implementation on the class path.
+
+	\section{Arquillian descriptor}
+
+When involving Arquillian into our project, there has to be a possibility to configure Arquillian. This configuration is happening in a dedicated file called \texttt{arquillian.xml} which is stored in \texttt{src/test/resources} when using Maven-like project. This file serves as a central and the only one configuration file from where Arquillian reads all necessary information in order to be able to fire tests.
+
+The selection of a container for our tests is happening at runtime, as mentioned before. Arquillian picks the right implementation according to container adapter which is present on the runtime class path when tests are executed. The very simple form of \texttt{arquillian.xml} could look like follows:
+
+\lstinputlisting[language=XML,label=pop-pipe,caption=Simple arquillian.xml]{src/arquillian_simple.xml}
+
+In this example, we specified two containers. Their appropriate dependency in \texttt{pom.xml} is added to class path. Arquillian registers two containers (\texttt{jbossas-A} and \texttt{jbossas-B}). Both of them implements same container interface. We can define any number of containers (of the same kind). 
 
 	\section{Anatomy of an Arquillian test}
-		\subsection{Arquillian descriptor}
-		
-% ze je to arquillian.xml a je v resources
+	
+After the explanation of the concept of a container and its selection during runtime, a form of an Arquillian test will be given. Arquillian test reuses JUnit testing principles heavily. After describing of Arquillian test in general, we will discuss negotiation of test execution and how communication between container and Arquillian is implemented. 
 		
 		\subsection{Arquillian test}
+
+Arquillian test uses different test runner from JUnit test. Arquillian uses \texttt{Arquillian}\footnote{in org.jboss.arquillian.junit package} runner. Then all specifics of JUnit testing are the same but one. We have to create our custom deployment which is going to be deployed upon test execution to a container.
+
+Deployment is constructed in a method annotated with \texttt{@Deployment}. Deployment can also has its name as its annotation argument. This method has to be public and static. Deployment method returns an \texttt{Archive<?>}\footnote{org.jboss.shrinkwrap.api package} from previously described ShrinkWrap tool. Deployment, which is constructed programmatically, is meant to be deployed to container specified in \texttt{arquillian.xml}. Since we can use multiple containers, there can be more then one deployment method. In order to be able to recognize to which container some particular deployment is meant to be deployed, we have to use \texttt{@TargetsContainer} at deployment methods. The argument of this annotation is a qualifier we used previously in \texttt{arquillian.xml} when we were defining containers.
+
+After deployment methods, tests as we are used are following. Since there can be more then one container configured, we are obliged to make difference between them, to specify on which container some particular method should run. Putting \texttt{@OperatesOnDeployment} annotation on \texttt{@Test} method, which argument is the name of a \texttt{@Deployment} method, ensures that this method will be executed in the right container.
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Arquillian test example]{src/arquillian_simple_test.java}
 
 % priklad jak to vyzera
 % sem patri aj deployment		
@@ -505,9 +531,9 @@ Arquillian tests run in two modes. They are called \textit{client mode} and \tex
 
 		\subsection{In-container mode}
 		
-When testing by in-container mode, we are deploying our \texttt{@Deployment} directly into some container and tests are executed in that container - results of the tests are communicated back to Arquillian. By this, way we are testing how our deployment is doing while operating in container context. Arquillian uses in-container mode by default. However, the fact we want to run tests in container is set by \texttt{@Deployment(testable = true)} on our deployment method.
+When testing by in-container mode, we are deploying our \texttt{@Deployment} directly into some container and tests are executed in that container - results of the tests are communicated back to Arquillian. By this way, we are testing how our deployment is doing while operating in container context. Arquillian uses in-container mode by default. However, the fact we want to run tests in container is set by \texttt{@Deployment(testable = true)} on our deployment method.
 
-When we want to test in a container, we have to repackage our \texttt{@Deployment} every time so we are able to communicate with tests which are running in other JVM. Communication is carried out via Servlet 3.0 protocol by default for EE6 compliant application servers.
+When we want to test in a container, we have to repackage our \texttt{@Deployment} every time so we are able to communicate with tests which are running in other JVM (when taking remote or managed container adapters into consideration). Communication is carried out via Servlet 3.0 protocol by default for EE6 compliant application servers. 
 
 % zistit veci o protokoloch
 
