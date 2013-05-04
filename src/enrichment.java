@@ -1,0 +1,1 @@
+@ArquillianResource private ClassToInject instance;

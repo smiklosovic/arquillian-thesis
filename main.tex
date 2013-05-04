@@ -541,9 +541,21 @@ The execution of test methods via \texttt{TestRunner} is happening subsequently.
 As we see, the test execution is performed dynamically over the network. Arquillian client side communicates with the test which is being invoked in container context. After test method execution, the result is sent back to client side. From the user point of view, he sees that test execution is being performed as he normally expects, knowing nothing about actual test execution over the network. 
 
 		\subsection{Test enrichment}	
-	
-% @Resource, @EJB, @Inject	
-% arquillian resource + api (ResoruceProvider)	
+
+Test enrichment is the process when resources are injected into a test class. Enrichment satisfies injection points by which we can in turn access and use injected members in test methods, avoiding their mocking. By injecting resources into test class within the container context, we are dealing with exactly the same resources as upon production-like usage.
+ 
+Test enrichment of the test class is happening before the actual execution of test methods. We can enrich test class by annotating members of test class by annotations. Arquillian is supporting four ways how to inject a resource into the test class.
+
+\begin{itemize}
+\item{@Resource - use to inject Java EE resource injections}
+\item{@EJB - used to inject EJB session beans}
+\item{@Inject - used to inject CDI injections}
+\item{@ArquillianResource - used to inject nonstandard, custom resources specified by Arquillian}
+\end{itemize}
+
+\texttt{@ArquillianResource} injection is supported via implementation of \texttt{ResourceProvider}\footnote{in org.jboss.arquillian.test.spi.enricher.resource package} SPI. We can then inject our own resources in the test case as simply as
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Custom test enrichment]{src/enrichment.java}
 
 	\section{Arquillian running modes}
 	
