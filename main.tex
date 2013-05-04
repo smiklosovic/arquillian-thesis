@@ -504,10 +504,6 @@ The selection of a container for our tests is happening at runtime, as mentioned
 
 In this example, we specified two containers. Their appropriate dependency in \texttt{pom.xml} is added to the class path. Arquillian registers two containers (\texttt{jbossas-A} and \texttt{jbossas-B}). Both of them implements same container interface. We can define any number of containers (of the same kind). 
 
-	\section{Arquillian SPI}
-
-
-
 	\section{Anatomy of an Arquillian test}
 	
 After the explanation of the concept of a container and its selection during runtime, a form of an Arquillian test will be given. Arquillian test reuses JUnit testing principles heavily. After describing of Arquillian test in general, we will discuss the deployment modification, the negotiation of the test execution and how communication between container and Arquillian is implemented and test enrichment as well.
@@ -540,7 +536,7 @@ The execution of test methods via \texttt{TestRunner} is happening subsequently.
 
 As we see, the test execution is performed dynamically over the network. Arquillian client side communicates with the test which is being invoked in container context. After test method execution, the result is sent back to client side. From the user point of view, he sees that test execution is being performed as he normally expects, knowing nothing about actual test execution over the network. 
 
-		\subsection{Test enrichment}	
+		\subsection{Test class enrichment}	
 
 Test enrichment is the process when resources are injected into a test class. Enrichment satisfies injection points by which we can in turn access and use injected members in test methods, avoiding their mocking. By injecting resources into test class within the container context, we are dealing with exactly the same resources as upon production-like usage.
  
@@ -581,13 +577,17 @@ It is possible to mix running modes in one test class. When we use \texttt{@Depl
 
 	\section{Arquillian event model}
 	
+Under the hood, Arquillian is event driven. There is a concept of \textit{events} which are \textit{fired}. All registered \textit{observers} which listens to such kind of event executes appropriate method which listen to some specific kind of message. This model is tree-like. The control is not returned to the initial fire point until all subsequent logic is executed as well. Events can be chained, meaning when one event is fired and some method listens to it (via \texttt{@Observes} annotation as a method annotation of event to handle), that method can fire another event to which some other method of some observer is listening as well.
 
+From the implementation point of view, events to be fired are classes. Events meant to be fired are created by injecting them into class from where firing is occurring. The firing itself is performed on the instance of created event via its \texttt{fire} method. The argument of firing method is new instance of class to be fired.
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Injecting of event and firing it]{src/events.java}
 	
 	\section{Extensibility of Arquillian}
 
 Arquillian uses concept of SPI heavily so in order to override some functionality or to add our own, we have to register our custom implementation of SPI interfaces into Arquillian.
 
-Arquillian is extend by \textit{extensions}. An extensions is distributed as a Maven dependency. In order to recognize an extensions from Arquillian point of view, an extension has to specify access point to it. The name of a class which implements \texttt{LoadableExtension}\footnote{in org.jboss.arquillian.core.spi package} SPI has to be placed in the file of the same name in \texttt{src/main/resources/META-INF} folder in extension module.
+Arquillian is extend by \textit{extensions}. An extensions is distributed as a Maven dependency. In order to recognize an extension from Arquillian point of view, an extension has to specify the access point to it. The name of a class which implements \texttt{LoadableExtension}\footnote{in org.jboss.arquillian.core.spi package} SPI has to be placed in the file of the same name in \texttt{src/main/resources/META-INF} folder in the extension module.
 
 Concrete implementations of SPI interfaces are registered in the implementation of \texttt{LoadableExtension} in \texttt{register} method. Classes are registered via \texttt{LoadableExtension.ExtensionBuilder}. To pick the most important methods, these are \texttt{observer}, for registering class which observes for events, and \texttt{service}, for registering classes which are able to produce instances to be injected into other classes.
 
