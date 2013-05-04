@@ -510,7 +510,7 @@ In this example, we specified two containers. Their appropriate dependency in \t
 
 	\section{Anatomy of an Arquillian test}
 	
-After the explanation of the concept of a container and its selection during runtime, a form of an Arquillian test will be given. Arquillian test reuses JUnit testing principles heavily. After describing of Arquillian test in general, we will discuss the deployment modification, the negotiation of the test execution and how communication between container and Arquillian is implemented. 
+After the explanation of the concept of a container and its selection during runtime, a form of an Arquillian test will be given. Arquillian test reuses JUnit testing principles heavily. After describing of Arquillian test in general, we will discuss the deployment modification, the negotiation of the test execution and how communication between container and Arquillian is implemented and test enrichment as well.
 		
 		\subsection{Arquillian test}
 
@@ -579,13 +579,17 @@ Client mode does not repackage our \texttt{@Deployment} at all. A deployment is 
 
 It is possible to mix running modes in one test class. When we use \texttt{@Deployment(testable = true)}, deployment is specified and tests are meant to be run in a container. However, when we do want to test from outside of a container, we have to use \texttt{@RunAsClient} annotation on a specific \texttt{@Test} method. By this way, we can assert some service is created in one test (doing it in container context) and we can as well assert that it behaves correctly from client point of view when we interact with this service in \texttt{@Test @RunAsClient} methods.
 
-% piatok
-
 	\section{Arquillian event model}
+	
+
 	
 	\section{Extensibility of Arquillian}
 
-In this section, the extensibility of Arquillian will be described and possible ways how to augment functionality of Arquillian will be shown.
+Arquillian uses concept of SPI heavily so in order to override some functionality or to add our own, we have to register our custom implementation of SPI interfaces into Arquillian.
+
+Arquillian is extend by \textit{extensions}. An extensions is distributed as a Maven dependency. In order to recognize an extensions from Arquillian point of view, an extension has to specify access point to it. The name of a class which implements \texttt{LoadableExtension}\footnote{in org.jboss.arquillian.core.spi package} SPI has to be placed in the file of the same name in \texttt{src/main/resources/META-INF} folder in extension module.
+
+Concrete implementations of SPI interfaces are registered in the implementation of \texttt{LoadableExtension} in \texttt{register} method. Classes are registered via \texttt{LoadableExtension.ExtensionBuilder}. To pick the most important methods, these are \texttt{observer}, for registering class which observes for events, and \texttt{service}, for registering classes which are able to produce instances to be injected into other classes.
 
 % sobota
 
