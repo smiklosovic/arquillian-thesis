@@ -352,7 +352,7 @@ All project definition is stored in file called \texttt{pom.xml} which is the sh
 
 \lstinputlisting[language=XML,label=pop-pipe,caption=A simple pom.xml file]{src/pom_example.xml}
 
-A dependency can have a parent, in that case, project's \texttt{pom.xml} it is not a \textit{top-level} \texttt{pom.xml}. A parent normally serves as an aggregator of different dependencies which are logically grouped but each artifact has its own responsibility and specific meaning in a project. After parent definition, coordinates of an artifact follows and finally we see this artifact depends on \texttt{junit} artifact of particular version and \texttt{scope}. When \texttt{scope} is not defined, it means that dependency is on classpath during compilation time. When \texttt{scope} is set to \texttt{test}, it means this dependency will be on classpath only during testing phase of the project - when we execute Maven as \texttt{mvn test}.
+A dependency can have a parent, in that case, project's \texttt{pom.xml} it is not a \textit{top-level} \texttt{pom.xml}. A parent normally serves as an aggregator of different dependencies which are logically grouped but each artifact has its own responsibility and specific meaning in a project. After parent definition, coordinates of an artifact follows and finally we see this artifact depends on \texttt{junit} artifact of particular version and \texttt{scope}. When \texttt{scope} is not defined, it means that dependency is on class path during compilation time. When \texttt{scope} is set to \texttt{test}, it means this dependency will be on class path only during testing phase of the project - when we execute Maven as \texttt{mvn test}.
 
 In Maven universe, besides ordinary POM files, there are also so-called \textit{BOM} files. BOM stands for \textit{bill of materials}. It is a POM file where only dependencies are specified so we can easily include BOM dependency into \texttt{pom.xml} and all dependencies which are specified in BOM will be imported to \texttt{pom.xml} as well. We can gather well known group of dependencies and import only one dependency which covers them all in order to provide more brevity and management convenience.
 
@@ -450,11 +450,11 @@ When a developer wants to test his business component in Java EE environment and
 
 Let's say developer finished some authorization features for an enterprise product. In the very simple scenario, the authorization module has to have database connectivity in order to verify credentials of the potential user, then he has to use some identity management component to be sure that user can do only authorized operations and those which are not allowed are banned. There also has to be a logging backend which tracks from where, when and how this particular user was logged in. Not even speaking about features like dependency injection or transaction control.
 
-How does developer deal with this very unpleasant task? Does it mean, when taking conventional testing tools as JUnit or Mockito\footnote{https://code.google.com/p/mockito/} into consideration, that he needs to mock almost everything so tests does not recognize they do not run in production environment but in faked one? We see very clearly that treating any non-trivial integration tests like mentioned is no way to go. Developer is burdened with plethora of services he needs to bring to the runtime of the test that it is likely this approach will be error prone or not even doable.
+How does developer deal with this very unpleasant task? Does it mean, when taking conventional testing tools as JUnit or Mockito\footnote{https://code.google.com/p/mockito/} into consideration, that he needs to mock almost everything so tests does not recognize they do not run in production environment but in faked one? We see very clearly that treating any non-trivial integration tests like mentioned is no way to go. Developer is burdened with plethora of services he needs to bring to the runtime of the test so it is likely this approach will be error prone or not even doable.
 	
-Arquillian switched the whole view of how integration testing is done. Instead of bringing enterprise services to tests, it brings tests into enterprise environment.
+Arquillian switched the whole view of how integration and functional testing is done. Instead of bringing enterprise services to tests, it brings tests into enterprise environment.
 
-The whole idea of previous testing paradigm was to test software in a such way we want to be sure that once the software we are testing is put into production, it will behave correctly and as expected. Arquillian skipped this process. It just tests the validity of the software by direct execution in the target environment and it is making assertions in the production-like runtime. Once these tests passed and required functionality is met, we are sure our software will do so in real production as well.
+The whole idea of previous testing paradigm was to test software in a such way we want to be sure that once the software we are testing is put into production, it will behave correctly and as expected. Arquillian skipped this process. It just tests the validity of the software by direct execution in the target environment and it is making assertions in the production-like runtime. Once these tests passed and required functionality is met, we are sure our software will do so in the real production as well.
 
 	\section{Core principles}
 	
@@ -475,8 +475,6 @@ How these components fits together can be seen on the next figure:
 	\label{fig:arquillian_test_infrastructure}
 \end{figure}
 
-% stvrtok
-
 	\section{Arquillian containers}
 	
 Arquillian container is an abstraction used in Arquillian context for a place where application we want to test (deployment) is deployed. Since Arquillian targets Java EE environment, a container is an enterprise application container such as JBoss AS\footnote{http://www.jboss.org/jbossas}, Glassfish\footnote{https://glassfish.java.net/} or similar.
@@ -487,26 +485,26 @@ Arquillian recognizes three ways how to deal with containers:
 	
 \begin{itemize}
 	\item{Remote container - represents separate JVM where a container runs. Arquillian just connects to this kind of container in order to manage test execution. Life cycle of such container itself is not managed by Arquillian.}
-	\item{Managed container - Arquillian controls all life cycle of a container, starting, stopping and deploying of an application under the test. This is basically the same case as remote container is. The only difference is in starting and stopping of a container. Arquillian manages it itself. A managed container is stopped after test execution is done. Same pays for its start.} 
+	\item{Managed container - Arquillian controls the whole life cycle of a container, starting, stopping and deploying of an application under the test. This is basically the same case as remote container is. The only difference is in starting and stopping of a container. Arquillian manages it itself. A managed container is stopped after test execution is done. Same pays for its start.} 
 	\item{Embedded container - resides in the same JVM as Arquillian does.}
 \end{itemize}	
 
-Every container adapter has to implement \texttt{DeployableContainer}\footnote{in org.jboss.arquillian.container.spi.client.container package} interface. Currently, there is allowed to have only one container implementation on the class path.
+Every container adapter has to implement \texttt{DeployableContainer}\footnote{in org.jboss.arquillian.container.spi.client.container package} interface. Currently, there is allowed to be only one container implementation on the class path at the same time.
 
 	\section{Arquillian descriptor}
 
-When involving Arquillian into our project, there has to be the possibility to configure Arquillian. The configuration is happening in a dedicated file called \texttt{arquillian.xml}\footnote{placed in src/test/resources when using Maven-like project}. This file serves as a central and the only one configuration file from where Arquillian reads all necessary information in order to be able to fire tests.
+When involving Arquillian into our project, there has to be a possibility to configure internals of Arquillian. The configuration is happening in a dedicated file called \texttt{arquillian.xml}\footnote{placed in src/test/resources when using Maven-like project}. This file serves as a central and the only one configuration file from where Arquillian reads all necessary information in order to be able to fire tests.
 
-The selection of a container for our tests is happening at runtime, as mentioned before. Arquillian picks the right implementation according to container adapter which is present on the runtime class path when tests are executed. The very simple form of \texttt{arquillian.xml} could look like follows:
+The selection of the container for our tests is happening at runtime, as mentioned before. Arquillian picks the right implementation according to container adapter which is present on the runtime class path when tests are executed. The very simple form of \texttt{arquillian.xml} could look like follows:
 
 \lstinputlisting[language=XML,label=pop-pipe,caption=Simple arquillian.xml]{src/arquillian_simple.xml}
 
-In this example, we specified two containers. Their appropriate dependency in \texttt{pom.xml} is added to the class path. Arquillian registers two containers (\texttt{jbossas-A} and \texttt{jbossas-B}). Both of them implements same container interface. We can define any number of containers (of the same kind). 
+In this example, we specified two containers. Their appropriate dependency (container adapter) in \texttt{pom.xml} is added to the class path. Arquillian registers two containers (\texttt{jbossas-A} and \texttt{jbossas-B}). Both of them implement same container interface. We can define any number of containers (of the same kind). 
 
 	\section{Anatomy of an Arquillian test}
 	
-After the explanation of the concept of a container and its selection during runtime, a form of an Arquillian test will be given. Arquillian test reuses JUnit testing principles heavily. After describing of Arquillian test in general, we will discuss the deployment modification, the negotiation of the test execution and how communication between container and Arquillian is implemented and test enrichment as well.
-		
+After the explanation of the concept of a container and its selection during runtime, a form of an Arquillian test will be given. Arquillian test reuses JUnit testing principles heavily. After describing of Arquillian test in general, we will discuss the deployment modification, the negotiation of the test execution, the implementation of the communication between container and Arquillian and the test enrichment as well.
+
 		\subsection{Arquillian test}
 
 Arquillian test uses different test runner from JUnit test. Arquillian uses \texttt{Arquillian}\footnote{in org.jboss.arquillian.junit package} runner. Then all specifics of JUnit testing are the same but one. We have to create our custom deployment which is going to be deployed upon test execution to a container.
@@ -523,11 +521,11 @@ After deployment methods, tests, as we are used, are following. Since there can 
 
 The very first thing the client side of Arquillian does is the modification of our deployment as we constructed it in our \texttt{@Deployment} method. This task is delegated to \texttt{DeploymentPackager}\footnote{in org.jboss.arquillian.container.test.spi.client.deployment package} SPI implementation. \texttt{DeploymentPackager} is responsible for the final deployment creation. Additional archives we are bundling into deployment are created in implementations of \texttt{AuxiliaryArchiveAppender}\footnote{in org.jboss.arquillian.container.test.spi.client.deployment package}. We can further process modification of archives we added via \texttt{AuxiliaryArchiveProcessor}\footnote{in org.jboss.arquillian.container.test.spi.client.deployment package} which is called once for every found \texttt{AuxiliaryArchiveAppender}.
 
-Arquillian uses this SPI for adding of JUnit archive which is needed in order to be able to execute tests in the container context. It also adds other resources as \texttt{beans.xml} file into Java EE modules.
+Arquillian uses this SPI for adding of JUnit archive which is needed in order to be able to execute tests in the container context. It also adds other resources as, for example, \texttt{beans.xml} file into Java EE modules.
 
 		\subsection{Test execution negotiation}
 
-After Arquillian creates deployment via test's \texttt{@Deployment} method, it must deploy the archive and negotiate the test execution within a container. This task is let on SPI interface \texttt{ContainerMethodExecutor}\footnote{in org.jboss.arquillian.container.test.spi package} by which implementation, we invoke test methods of our test class. These test method execution requests are delegated from the client side to \texttt{ServletTestRunner}\footnote{in org.jboss.arquillian.protocol.servlet package}. This class is bundled into deployment, as stated in the previous section. The method name and its class are specified as paramaters to \texttt{ServletTestRunner}.
+After Arquillian creates deployment via test's \texttt{@Deployment} method, it must deploy the archive and negotiate the test execution within a container. This task is let on SPI interface \texttt{ContainerMethodExecutor}\footnote{in org.jboss.arquillian.container.test.spi package} by which implementation we invoke test methods of our test class. These test method execution requests are delegated from the client side to \texttt{ServletTestRunner}\footnote{in org.jboss.arquillian.protocol.servlet package}. This class is bundled into deployment, as stated in the previous section. The method name and its class are specified as parameters to \texttt{ServletTestRunner}.
 
 After servlet runner receives a message regarding test method invocation, it delegates to \texttt{TestRunner}\footnote {in org.jboss.arquillian.container.test.spi package} SPI implementation. The role of \texttt{TestRunner} is to dynamically build a test suite from a test class and run the suite subsequently. This work flow is happening in the container context.
 
@@ -537,7 +535,7 @@ As we see, the test execution is performed dynamically over the network. Arquill
 
 		\subsection{Test class enrichment}	
 
-Test enrichment is the process when resources are injected into a test class. Enrichment satisfies injection points by which we can in turn access and use injected members in test methods, avoiding their mocking. By injecting resources into test class within the container context, we are dealing with exactly the same resources as upon production-like usage.
+Test enrichment is the process when resources are injected into a test class. The enrichment satisfies injection points by which we can in turn access and use injected members in test methods, avoiding their mocking. By injecting resources into test class within the container context, we are dealing with exactly the same resources as upon production-like usage.
  
 Test enrichment of the test class is happening before the actual execution of test methods. We can enrich test class by annotating members of test class by annotations. Arquillian is supporting four ways how to inject a resource into the test class.
 
@@ -554,17 +552,17 @@ Test enrichment of the test class is happening before the actual execution of te
 
 	\section{Arquillian running modes}
 	
-Arquillian tests run in two modes. They are called \textit{client mode} and \textit{in-container} mode. They are defining the difference of how tests are treated from the container point of view. The explanation of their differences is following.
+Arquillian tests run in two modes. They are called \textit{client mode} and \textit{in-container} mode. They are defining the difference how tests are handled from the container point of view. The explanation of their differences is following.
 
 		\subsection{In-container mode}
 		
 When testing by in-container mode, we are deploying our \texttt{@Deployment} directly into some container and tests are executed in that container - results of the tests are communicated back to Arquillian. By this way, we are testing how our deployment is doing while operating in container context. Arquillian uses in-container mode by default. However, the fact we want to run tests in container is set by \texttt{@Deployment(testable = true)} on our deployment method.
 
-When we want to test in a container, we have to repackage our \texttt{@Deployment} every time so we are able to communicate with tests which are running in other JVM (when taking remote or managed container adapters into consideration). Communication is carried out via Servlet 3.0 protocol by default for EE6 compliant application servers. 
+When we want to test in a container, we have to repackage our \texttt{@Deployment} every time so we are able to communicate with tests which are running in other JVM (when taking remote or managed container adapters into consideration). Communication is carried out via Servlet 3.0 protocol by default for Java EE 6 compliant application servers. 
 
 		\subsection{Client mode}
 
-Client mode does not repackage our \texttt{@Deployment} at all. A deployment is just deployed "as-is" meaning no other modifications are done upon it and Arquillian just deploy the package to a container. We are running tests outside of a container. This mode is useful when we want to see how client would eventually use the application which is deployed in a container from his point of view. This running mode is not used by default - we set it by \texttt{@Deployment(testable = false)}.
+Client mode does not repackage our \texttt{@Deployment} at all. A deployment is just sent to container "as-is" meaning no other modifications are done upon it. We are running tests outside of container. This mode is useful when we want to see how client would eventually use the application which is deployed in a container from his point of view. This running mode is not used by default - we set it by \texttt{@Deployment(testable = false)}.
 
 		\subsection{Mixing running modes}
 
@@ -572,21 +570,23 @@ It is possible to mix running modes in one test class. When we use \texttt{@Depl
 
 	\section{Arquillian event model}
 	
-Under the hood, Arquillian is event driven. There is a concept of \textit{events} which are \textit{fired}. All registered \textit{observers} which listens to such kind of event executes appropriate method which listen to some specific kind of message. This model is tree-like. The control is not returned to the initial fire point until all subsequent logic is executed as well. Events can be chained, meaning when one event is fired and some method listens to it (via \texttt{@Observes} annotation as a method annotation of event to handle), that method can fire another event to which some other method of some observer is listening as well.
+Under the hood, Arquillian is event driven. There is a concept of \textit{events} which are \textit{fired}. All registered \textit{observers} which listens to such kind of events execute appropriate methods which listen to some specific kind of event. Event model is tree-like structure. The control is not returned to the initial point of fire until all subsequent logic is executed as well. Events can be chained, meaning when one event is fired and some method listens to it (via \texttt{@Observes} as argument annotation of event to handle), that method can fire another event to which other method of some observer is listening as well.
 
-From the implementation point of view, events to be fired are classes. Events meant to be fired are created by injecting them into class from where firing is occurring. The firing itself is performed on the instance of created event via its \texttt{fire} method. The argument of firing method is new instance of class to be fired.
+From the implementation point of view, events to be fired are classes. Events directed to be fired are created by injection into class from where firing is occurring. The firing itself is performed on the instance of created event via its \texttt{fire} method. The argument of firing method is new instance of class to be fired.
 
 \lstinputlisting[language=Java,label=pop-pipe,caption=Injecting of event and firing it]{src/events.java}
 	
 	\section{Extensibility of Arquillian}
 
-Arquillian uses concept of SPI heavily so in order to override some functionality or to add our own, we have to register our custom implementation of SPI interfaces into Arquillian.
+Arquillian uses concept of SPI heavily so in order to override some functionality or to add our own, we have to register our custom implementation of SPI interfaces into Arquillian. These implementations then override defaults, incorporating our own functionality directly into core Arquillian infrastructure.
 
 Arquillian is extend by \textit{extensions}. An extensions is distributed as a Maven dependency. In order to recognize an extension from Arquillian point of view, an extension has to specify the access point to it. The name of a class which implements \texttt{LoadableExtension}\footnote{in org.jboss.arquillian.core.spi package} SPI has to be placed in the file of the same name in \texttt{src/main/resources/META-INF} folder in the extension module.
 
-Concrete implementations of SPI interfaces are registered in the implementation of \texttt{LoadableExtension} in \texttt{register} method. Classes are registered via \texttt{LoadableExtension.ExtensionBuilder}. To pick the most important methods, these are \texttt{observer}, for registering class which observes for events, and \texttt{service}, for registering classes which are able to produce instances to be injected into other classes.
+Concrete implementations of SPI interfaces are registered in the implementation of \texttt{LoadableExtension} in \texttt{register} method. Classes are registered via \texttt{LoadableExtension.ExtensionBuilder}. To pick the most important methods, these are \texttt{observer}, for registering classes which observe for events, and \texttt{service}, for registering classes which are able to produce instances to be injected into other classes.
 
-% sobota
+	\section{Conclusion}
+	
+In the previous sections, overall functionality and principles of Arquillian testing platform were given. The reader should have solid background regarding principles of Arquillian and he should also grasp main features and architectural design when it comes to test negotiation, test enrichment, container abstraction and Arquillian extensibility.
 
 \chapter{Design of Arquillian Android container}
 	\chapter{Merging event driven extension into container context}
