@@ -588,22 +588,98 @@ Concrete implementations of SPI interfaces are registered in the implementation 
 	
 In the previous sections, overall functionality and principles of Arquillian testing platform were given. The reader should have solid background regarding principles of Arquillian and he should also grasp main features and architectural design when it comes to test negotiation, test enrichment, container abstraction and Arquillian extensibility.
 
-\chapter{Design of Arquillian Android container}
-	\chapter{Merging event driven extension into container context}
-	
+The incorporation of Arquillian framework into testing process of Java EE application is more than welcome. Arquillian provides other way how we can look at testing. Testing is becoming the essential part of development so it is very suitable for programming styles as XP or iterative development processes in general. By possibility of trying our code directly in target environment, testing process becomes central activity to focus on.
+
+\chapter{Arquillian Android container}
+
+After the presentation of the two mainstream development processes and the justification of the necessity of continuous integration, the reader could make himself familiar about various tools needed and used in Java EE environment which usage shows vector how a developer can code Java EE applications effectively.
+
+The last chapter dealt with describing of main features of Arquillian testing platform. The reader is aware of advantages of Arqullian testing platform in Java EE environment and sees advantages of using Arquillian in testing process of (not only) Java EE applications by XP or iterative way.
+
+In this chapter, we are going to describe reasons and the development model of Java EE application based on Android platform. We then conclude that there is a need for Arquillian Android container which will be subsequently designed and implemented in upcoming chapters.
+
+	\section{Central ideas}
+
+As we saw, the central concept around which Arquillian is turning around is the concept of \textit{container}. Container abstraction serves as a common pattern how application is deployed and how tests are executed afterwards.
+
+As described previously, the support for a container is implemented via container adapter. A container adapter is a Maven dependency which, once on class path, it is able to communicate with Arquillian on one side and with concrete container implementation on the other side.
+
+When we want to bring the whole testing idea from ordinary Java EE environment into Android platform, taking into consideration container abstraction, we clearly see that Android device itself could be viewed as container to which applications are deployed and the whole principle of testing could be just the same. Since deployment is a term used for Java EE containers, we will use term \textit{installation} instead.
+
+Testing of applications is divided into two categories. We can test web applications and native Android applications.
+
+Regarding web applications, it is clear that they are not going to be run on Android device itself. Web applications are deployed in containers as we are used. However, when executing the tests, web application or its part from \texttt{@Deployment} has to be deployed in web container but tests have to be executed from Android point of view, in browser which runs on Android device, against the web deployment.
+
+This approach brings the basic problem in supporting of multiple adapter containers on the class path. As explained previously, we can specify only container (even multiple of them) of the same kind. Next, we have to figure out how testing will be carried out. We need to bring Selenium into Android context.
+
+Regarding native Android application, we need to do the investigation how Android container could support writing tests in a similar way as Selenium is doing with web browsers. Selenium and its extensions as WebDriver operates with web elements. When testing native Android applications, we need to operate on elements by which application is built as such.
+
+Last but not least, we need to implement the whole Android container. Android container is working with two types of containers. One type of container stands for virtual device called \textit{Android Virtual Device (AVD)} from Android SDK. The other one is real physical Android device (e.g. a mobile phone).
+
+It is necessary to support both types of devices from developer point of view so he uses Android device transparently - it does not matter if there is emulated or real device underneath. 
+
+Since we strives for having only one implementation of Arquillian Android container and we need to support web testing as well as native testing of Android applications, we have to provide a way how to achieve this desire. 
+
+Arquillian Android container has to be \textit{testing agnostic} meaning the decision about the way of testing (web or native mode) is carried out upon run time. Whichever implementation of testing mode will be present on class path during testing process, that testing mode will be used.
+
+Supporting both modes of testing while having one kind of container leads to the necessity of implementing Arquillian Android container in a pluggable way. By this solution, we are opening doors for other kind of testing implementation which developer could deliver for Arquillian Android container, preserving its extensibility.
+
+	\section{Architectural decisions}
+
+Arquillian Android container\footnote{expression "Android container" will be used from now on for brevity} is managed container. Managed containers, as described earlier, are containers which life cycle is controlled and initiated (like start and stop of container) by Arquillian itself.
+
+Android container is in some sense remote container as well. We need to be able to connect to running AVD instances as well as to some real physical device which is already up and running independently from us. In this case, we should use term \textit{remote container} instead of managed but we prefer managed version more since connecting to already running container is just a feature of the container logic as such.
+
+Android container is a Maven-based Java application which implements container abstraction of Arquillian testing platform. From the Maven point of view, Android container is divided into modules which combined together shapes the whole container implementation.
+
+At high level, Android container consists of these Maven based sub-projects (by alphabetical order):
+
+\begin{itemize}
+	\item{\texttt{android-container-api}: contains API for Android container, interfaces to be implemented for \texttt{arquillian-android-managed} implementation}
+	\item{\texttt{android-container-bom}: Bill of materials for Android container}
+	\item{\texttt{android-container-build-config}: contains configuration files to import into IDE (Eclipse\footnote{http://www.eclipse.org/}-based) for following JDF\footnote{http://www.jboss.org/jdf/} coding style. Arquillian fits under JDF and JBoss universe as Arquillian Android container does. JDF offers various configuration files to import to IDE for coding style and source code formatting. Arquillian Android container follows these guidelines so it is JDF and JBoss compliant.}
+	\item{\texttt{android-container-build}: specifies dependency management and configuration of plugin executions such as Maven compiler plugin for project's build.}
+	\item{\texttt{android-container-depchain}: aggregates all implementation modules in case they are needed in other project}
+	\item{\texttt{android-container-managed}: introduces the central implementation of the Android container.}
+	\item{\texttt{android-container-spi}: implements classes for events to be fired to control execution path for Android container}
+	\item{\texttt{android-multiple-containers}: implements custom implementation of container registration for Arquillian so more than one container adapter can be present at class path during runtime}
+	\item{\texttt{pom.xml}: aggregates all modules, serves as a parent via which the whole project is built, packaged and installed.}
+\end{itemize} 
+
+To reflect parent-child relationship from the Maven point of view, the following figure~\ref{fig:android_container_maven_modules} captures Android container modules and this relationship.
+
+\begin{figure}[h!tb]
+	\centering
+	\includegraphics[width=.8\textwidth]{resources/android-container-modules.png}
+	\caption{Arquillian Android container - Maven modules}
+	\label{fig:android_container_maven_modules}
+\end{figure}
+
 \chapter{Implementation of Arquillian Android container}
 
-\chapter{Usage of Android container in web testing context}
+	\section{Event driven approach}
 
-	\section{Selenium WebDriver}
-	
-	\section{Arquillian Graphene}
-	
-	\section{Arquillian Drone}
-	
-	\section{Web testing with Android container}
+	\section{Implementation of container lifecycle}
 
-\chapter{Native testing of Android application}
+	\subsection{Configuration}	
+	
+	\subsection{Starting of a container}
+	
+	\subsection{Deploying and undeploying}
+	
+	\subsection{Stopping of a container}
+	
+	\subsection{Android SD card}	
+	
+	\subsection{Usage}
+	
+		\subsubsection{Mixed container adapters}
+	
+		\subsubsection{Multiple Android containers}
+
+\section{Support for WebDriver}
+
+\section{Support for native testing}
 
 %	\section{Arquillian philosophy}
 %When some code is being developed in the iteration of the XP development process, we have to assert that code is eventually working in %the final product environment. The obvious approach to be sure that what we coded behaves properly is to deploy whole applicati
