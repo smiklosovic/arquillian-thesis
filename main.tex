@@ -576,6 +576,28 @@ From the implementation point of view, events to be fired are classes. Events di
 
 \lstinputlisting[language=Java,label=pop-pipe,caption=Injecting of event and firing it]{src/events.java}
 	
+	\section{Injection of classes}
+
+In connection with event model which is embedded in Arquillian by default, question about flow of resources we create arises. When we pass the control from one method to another by events, there has to be a way how already existing instances of classes are accessed in them on demand.
+
+Instances of classes we want to register into Arquillian for further usage are created via \texttt{InstanceProducer}\footnote{in org.jboss.arquillian.core.api package}. Let's say we need to register instance of \texttt{SomeClass} for further usage. The following example shows how this is achieved:
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Instance producer in practice]{src/instance_producer.java}	
+	
+Instance producer just sets instance of class to be reached Arquillian-wide via its \texttt{set} method.
+
+After class is instantiated and registered via its instance producer, we can access this instance wherever we want (logically only after time it is created) by \texttt{Instance}\footnote{in org.jboss.arquillian.core.api package} variable in class of access. Let's say we need to access instance of class we just produced and registered in the previous example. The following use case shows how to access this instance:
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Access to produced instance]{src/instance_access.java}	
+
+We get instance of \texttt{SomeClass} by \texttt{get} method. We can register only one instance of some particular class. Currently, there is no possibility to register multiple of them simultaneously because they are registered in \texttt{HashObjectStore}\footnote{in org.jboss.arquillian.core.spi package} which uses just \texttt{ConcurentHashMap<Class<?>, Object>} to store them.
+
+Instances of classes we registered have their \textit{scope}. A scope of classes says during which period they are visible to be used and accessed. Scope of classes are defined during \texttt{InstanceProducer} declaration by using appropriate annotation. There are multiple scopes we can use for our instance producers. For the sake of argument, when we want to isolate the availability of some instance only during the period of container existence, we can do so by annotating instance producer with \texttt{ContainerScoped}\footnote{in org.jboss.arquillian.container.spi.context.annotation package}. The example follows:
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Container scope example]{src/instance_container_scoped.java}
+
+Instance producers and usage of appropriate scope is the feature Arquillian relies heavily on. Because of event nature and behavior of Arquillian framework, producing of instances is essential part without which we could control instance passing very inconveniently.
+
 	\section{Extensibility of Arquillian}
 
 Arquillian uses concept of SPI heavily so in order to override some functionality or to add our own, we have to register our custom implementation of SPI interfaces into Arquillian. These implementations then override defaults, incorporating our own functionality directly into core Arquillian infrastructure.
@@ -608,7 +630,7 @@ When we want to bring the whole testing idea from ordinary Java EE environment i
 
 Testing of applications is divided into two categories. We can test web applications and native Android applications.
 
-Regarding web applications, it is clear that they are not going to be run on Android device itself. Web applications are deployed in containers as we are used. However, when executing the tests, web application or its part from \texttt{@Deployment} has to be deployed in web container but tests have to be executed from Android point of view, in browser which runs on Android device, against the web deployment.
+Regarding web applications, it is clear that they are not going to be run on Android device itself. Web applications are deployed in ordinary application containers as we are used. However, when executing tests, web application or its part from \texttt{@Deployment} has to be deployed in web application container but tests have to be executed from Android point of view, in browser which runs on Android device, against the web deployment.
 
 This approach brings the basic problem in supporting of multiple adapter containers on the class path. As explained previously, we can specify only container (even multiple of them) of the same kind. Next, we have to figure out how testing will be carried out. We need to bring Selenium into Android context.
 
@@ -620,7 +642,7 @@ It is necessary to support both types of devices from developer point of view so
 
 Since we strives for having only one implementation of Arquillian Android container and we need to support web testing as well as native testing of Android applications, we have to provide a way how to achieve this desire. 
 
-Arquillian Android container has to be \textit{testing agnostic} meaning the decision about the way of testing (web or native mode) is carried out upon run time. Whichever implementation of testing mode will be present on class path during testing process, that testing mode will be used.
+Arquillian Android container has to be \textit{testing agnostic}, meaning the decision about the way of testing (web or native mode) is the decision resolved upon runtime. Whichever implementation of testing mode will be present on class path during testing process, that testing mode will be used.
 
 Supporting both modes of testing while having one kind of container leads to the necessity of implementing Arquillian Android container in a pluggable way. By this solution, we are opening doors for other kind of testing implementation which developer could deliver for Arquillian Android container, preserving its extensibility.
 
@@ -661,6 +683,8 @@ To reflect parent-child relationship from the Maven point of view, the following
 
 	\section{Implementation of container lifecycle}
 
+	\section{Extension for multiple containers}
+
 	\subsection{Configuration}	
 	
 	\subsection{Starting of a container}
@@ -677,12 +701,13 @@ To reflect parent-child relationship from the Maven point of view, the following
 	
 		\subsubsection{Multiple Android containers}
 
-\section{Support for WebDriver}
+\chapter{Integration of web testing}
 
-\section{Support for native testing}
+	\section{Arquillian Android Drone for web testing}
 
-%	\section{Arquillian philosophy}
-%When some code is being developed in the iteration of the XP development process, we have to assert that code is eventually working in %the final product environment. The obvious approach to be sure that what we coded behaves properly is to deploy whole applicati
+\chapter{Investigation for native testing}
+
+	\section{Arquillian Android Drone for native testing}
 
 \bibliographystyle{plain}  % bibliografický styl 
 \bibliography{bib-db}      % soubor s citovanými
