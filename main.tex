@@ -12,6 +12,7 @@
 \usepackage[pdftex,bookmarks=true]{hyperref}
 \usepackage{paralist}
 \usepackage{textcomp}
+\usepackage{enumitem}
 
 \clubpenalty=300
 \widowpenalty=300
@@ -708,8 +709,22 @@ Configuration of Android container is defined by implementations of \texttt{Cont
 Validation of all configuration properties is executed via \texttt{validate} method of configuration class. The complete documentation of the container configuration can be found in resources.
 
 	\section{Implementation of container lifecycle}	
+	
+We start the explanation of Android container implementation with the most crucial class the whole container lifecycle is turning around - \texttt{AndroidManagedDeployableContainer}\footnote{in org.jboss.arquillian.container.android.managed package}. All container implementations have to implement \texttt{DeployableContainer} interface as this class does. The lifecycle of any container (so Android container as well) can be described in the following flow, names of these actions are exactly names of methods of \texttt{DeployableContainer} to be overridden:
 
-In the following section, the detailed description of container lifecycle will be given. 
+\begin{itemize}[nolistsep]
+	\item{\texttt{setup} - sets up a container, e.g. its configuration passed as the argument is treated appropriately and additional steps required to be done before actual starting of a container are figured out}
+	\item{\texttt{start} - starts a container, this method starts container from scratch in case of managed container or it can provide a way how to connect to already running container in case of remote container}
+	\item{\texttt{deploy} - deploys an archive assembled in \texttt{@Deployment} in the test class}
+	\item{\texttt{undeploy} - undeploys an archive which was previously deployed to container}
+	\item{\texttt{stop} - stops container, in case of managed container it means its shutdown, in case of remote container it basically means that we disconnect from it safely after deployment is undeployed and test results are returned back to us}
+\end{itemize}
+
+When setting up Android container in \texttt{setup} method, first of all, Android container configuration \footnote{AndroidManagedContainerConfiguration class} is made \texttt{@ContainerScoped} via its \texttt{InstanceProducer} injection point. By doing this, we can access Android configuration during the whole Android container lifecycle via normal \texttt{Instance} injection in any class which needs the access to Android container configuration from \texttt{arquillian.xml}.
+
+This pattern of creating resources via instance producers is typical in Android container and will be visible many times now on. The usage of annotation as \texttt{@ContainerScoped} is needed because injection producers makes these classes visible during the whole lifetime of the application and that is not desired because when we start another Android container, that class would take over the new one. All instance producers creates instances which are \texttt{@ContainerScoped} for the same reason.
+
+We set \texttt{AndroidSDK}\footnote{org.jboss.arquillian.container.android.managed.configuration package} instance which abstracts the interaction with Android SDK installation on our host in the same way. After preparing all needed to start the container itself, Arquillian proceeds and executes \texttt{start} method.
 
 		\subsection{Starting of a container}
 
