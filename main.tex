@@ -740,6 +740,12 @@ We set \texttt{AndroidSDK}\footnote{org.jboss.arquillian.container.android.manag
 
 After configuration of container instance, the actual start is going to unfold via container's \texttt{start} method. The only role of this methods is to fire \texttt{AndroidContainerStart} event which will pass execution to \texttt{AndroidBridgeConnector}\footnote{all next classes are located in org.jboss.arquillian.container.android.managed.impl package}. \texttt{AndroidBridgeConnector} observes this event in \texttt{initAndroidDebugBridge} method. The responsibility of the bridge connector is to start up Android Debug bridge via \texttt{ddmlib} library API. \texttt{AndroidBridge} instance of container scope is produced and Android bridge is connected. After Android bridge is up and running, \texttt{AndroidBridgeInitialized} event is fired and execution is passed to \texttt{AndroidDeviceSelector} implementation.
 
+\texttt{AndroidDeviceSelector} is the central place where the decision about the connection to already starting emulator (or real physical device) or the starting of already existing AVD is made. We can even create AVD dynamically as will be presented lately.
+
+The goal of the implementation of \texttt{AndroidDeviceSelector}\footnote{class AndroidDeviceSelectorImpl} is to produce \texttt{AndroidDevice} of container scope. The event saying that bridge was initialized - \texttt{AndroidBridgeInitialized} event - is observed in \texttt{selectDevice} method. The connection logic of device selector can be described effectively in the following pseudocode:
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Pseudocode of device selector logic]{src/device_selector_pseudo.java}
+
 			\subsubsection{Emulator}
 	
 			\subsubsection{Physical device}
