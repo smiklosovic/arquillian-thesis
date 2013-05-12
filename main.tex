@@ -683,17 +683,37 @@ To reflect parent-child relationship from the Maven point of view, the following
 
 	\section{Implementation of container lifecycle}
 
+In the following section, the detailed description of container lifecycle will be given. 
+
 		\subsection{Extension for multiple containers}
+
+In order to suppress the limitation of Arquillian container abstraction - using only one implementation of \texttt{DeployableContainer} on the classpath at time - there is the module \texttt{arquillian-multiple-containers} implemented. The very first thing which Arquillian does while executing the testing lifecycle is to read Arquillian descriptor in \texttt{arquillian.xml} and figure out which containers are about to be registered.
+
+In \texttt{arquillian-multiple-containers} module we are suppressing the implementation of \texttt{ContainerExtension}\footnote{in org.jboss.arquillian.container.impl package} and we are providing \texttt{MultipleContainersExtension}\footnote{in org.jboss.arquillian.extension.multiplecontainers package} implementation instead. The fact \linebreak about taking other container extension implementation into consideration is fulfilled via SPI mechanism in \texttt{META-INF/services/}\footnote{in org.jboss.arquillian.core.spi.LoadableExtension} configuration file. 
+
+\texttt{MultipleContainerRegistryCreator} class observes event \linebreak \texttt{ArquillianDescriptor} from Arquillian. It scans for all available container definitions in \texttt{arquillian.xml}, then it creates container register of \texttt{MultipleLocalContainersRegistry} and registers newly scanned containers via its \texttt{create} method. Definitions of containers in Arquillian descriptor in \texttt{arquillian.xml} are validated, so e.g. there can not be more than one default container or group of containers.
+
+During actual creation of concrete container, container registry (via its \texttt{create} method) loads all implementations of \texttt{DeployableContainer} located on class path and then compares configuration property named \texttt{adapterImplClass} in container definition against already loaded implementations. If match is found, such container is created via \linebreak \texttt{addContainer} method.
+
+It is worth to say that \texttt{adapterImplClass} property has to be defined in container configuration in \texttt{arquillian.xml} only in case when more then one different \texttt{DeployableContainer} implementations are on class path. We can omit its presence when one implementation is on class path because there is not ambiguity anymore. 
 
 		\subsection{Configuration}
 	
 		\subsection{Starting of a container}
 	
+			\subsubsection{Emulator}
+	
+			\subsubsection{Physical device}
+	
 		\subsection{Deploying and undeploying}
 	
 		\subsection{Stopping of a container}
-	
+
+
+
 		\subsection{Android SD card}
+
+
 	
 	\section{Usage}
 
