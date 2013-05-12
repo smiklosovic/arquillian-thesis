@@ -679,13 +679,15 @@ To reflect parent-child relationship from the Maven point of view, the following
 
 \chapter{Implementation of Arquillian Android container}
 
+It is clear that we have to interact with actual Android device in some way. Android container is just a layer between Arquillian and Android device. The interface of Android device we can communicate with is implemented in Maven library called \texttt{ddmlib}\footnote{com.android.ddmlib:ddmlib}. \texttt{ddmlib} is Java library for communication with Android device and Android Debug Bridge to which Android device is connected. We do not communicate with Android device directly but we do so via mentioned Android Debug Bridge. Every device is connected to so called \textit{console port}. We can execute various command via debug bridge, these are internally translated into corresponding commands and actions performed at Android device, virtual or physical.
+
+In order to be able to arrange interaction with Android devices, there has to be Android SDK installed on the host computer. Android SDK bundles all existing versions of AVD\footnote{Android Virtual Device}, provides all commands for creating AVD, starting emulator, creating Android SD card and so on. It is crucial to have Android SDK installed on host computer when testing. Without Android SDK, it is not possible to bring Android into our tests. The existence and presence of Android SDK is tested in Android container. Its location is typically reflected by \texttt{ANDROID\_HOME} system property, it can be changed in container configuration to any arbitrary location.
+
 	\section{Event driven approach}
 
-	\section{Implementation of container lifecycle}
-
-In the following section, the detailed description of container lifecycle will be given. 
-
-		\subsection{Extension for multiple containers}
+	
+	
+	\section{Extension for multiple containers}
 
 In order to suppress the limitation of Arquillian container abstraction - using only one implementation of \texttt{DeployableContainer} on the classpath at time - there is the module \texttt{arquillian-multiple-containers} implemented. The very first thing which Arquillian does while executing the testing lifecycle is to read Arquillian descriptor in \texttt{arquillian.xml} and figure out which containers are about to be registered.
 
@@ -697,10 +699,20 @@ During actual creation of concrete container, container registry (via its \textt
 
 It is worth to say that \texttt{adapterImplClass} property has to be defined in container configuration in \texttt{arquillian.xml} only in case when more then one different \texttt{DeployableContainer} implementations are on class path. We can omit its presence when one implementation is on class path because there is not ambiguity anymore. 
 
-		\subsection{Configuration}
+	\section{Configuration}
 	
+After being able to register more than one container implementation of \texttt{DeployableContainer}, so JBoss AS container (or any other container) can live besides Android container transparently, we have to configure these containers. The focus on the configuration of Android container will be given since configuration of other containers is out of scope.
+
+Configuration of Android container is defined by implementations of \texttt{ContainerConfiguration}\footnote{in org.jboss.arquillian.container.spi.client.container package}, in our case - \texttt{Android\-Managed\-Container\-Configuration}\footnote{in org.jboss.arquillian.container.android.managed.configuration package} class. Values of configuration properties are automatically scanned from \texttt{arquillian.xml} and dynamically put into their corresponding class members in configuration class.
+
+Validation of all configuration properties is executed via \texttt{validate} method of configuration class. The complete documentation of the container configuration can be found in resources.
+
+	\section{Implementation of container lifecycle}	
+
+In the following section, the detailed description of container lifecycle will be given. 
+
 		\subsection{Starting of a container}
-	
+
 			\subsubsection{Emulator}
 	
 			\subsubsection{Physical device}
@@ -712,14 +724,14 @@ It is worth to say that \texttt{adapterImplClass} property has to be defined in 
 
 
 		\subsection{Android SD card}
-
-
 	
 	\section{Usage}
 
-After the explanation of the internal workings of Android container, we are going to show the reader possible use cases how Android container abstraction can be used. Various scenarios are discussed.
+After the explanation of the internal workings of Android container, we are going to show	 possible use cases how Android container abstraction can be used. Various scenarios are discussed.
 
 We start with the presentation of a simple Android container test which runs tests as a client. After that, we show how Android container can be used in connection with other type of container e.g. JBoss AS. This use case shows how different container adapter implementations can be put in one test because of arquillian-multiple-containers extension. In the end, the example of executing tests in two different Android containers will be given.
+
+In any case, when we want to test with Android container, we have to put its container adapter on class path as mentioned early for any other container. In our case, we have to add the dependency \texttt{android-container-depchain}\footnote{org.jboss.arquillian.container:android-container-depchain:pom} with \texttt{test} scope as a Maven dependency into \texttt{pom.xml} of our test project.
 
 		\subsection{Android container test}
 
