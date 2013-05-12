@@ -683,6 +683,8 @@ From the design point of view, Android container execution flow is event-driven 
 
 By event-driven approach, extensions of Android container are written relatively easily as well. Even if we do not know how particular functionality will be implemented by future extensions, by firing and observing events we are providing extension points the third party software can rely on. Android container just offers these events to be observed, processed and fired back. Since firing of messages directs execution flow, integration of external extensions which have to be put on class path at runtime guarantees that Android container is pluggable.
 
+All events to be fired are located in the separate Maven dependency called \texttt{android-container-spi}. \texttt{android-container-spi} package contains nothing but these events.
+
 \begin{figure}[h!tb]
 	\centering
 	\includegraphics[width=.8\textwidth]{resources/android-container-modules.png}
@@ -720,7 +722,7 @@ Validation of all configuration properties is executed via \texttt{validate} met
 	
 We start the explanation of Android container implementation with the most crucial class the whole container lifecycle is turning around - \texttt{AndroidManagedDeployableContainer}\footnote{in org.jboss.arquillian.container.android.managed package}. All container implementations have to implement \texttt{DeployableContainer} interface as this class does. The lifecycle of any container (so Android container as well) can be described in the following flow, names of these actions are exactly names of methods of \texttt{DeployableContainer} to be overridden:
 
-\begin{itemize}[nolistsep]
+\begin{itemize}
 	\item{\texttt{setup} - sets up a container, e.g. its configuration passed as the argument is treated appropriately and additional steps required to be done before actual starting of a container are figured out}
 	\item{\texttt{start} - starts a container, this method starts container from scratch in case of managed container or it can provide a way how to connect to already running container in case of remote container}
 	\item{\texttt{deploy} - deploys an archive assembled in \texttt{@Deployment} in the test class}
@@ -735,6 +737,8 @@ This pattern of creating resources via instance producers is typical in Android 
 We set \texttt{AndroidSDK}\footnote{org.jboss.arquillian.container.android.managed.configuration package} instance which abstracts the interaction with Android SDK installation on our host in the same way. After preparing all needed to start the container itself, Arquillian proceeds and executes \texttt{start} method.
 
 		\subsection{Starting of a container}
+
+After configuration of container instance, the actual start is going to unfold via container's \texttt{start} method. The only role of this methods is to fire \texttt{AndroidContainerStart} event which will pass execution to \texttt{AndroidBridgeConnector}\footnote{all next classes are located in org.jboss.arquillian.container.android.managed.impl package}. \texttt{AndroidBridgeConnector} observes this event in \texttt{initAndroidDebugBridge} method. The responsibility of the bridge connector is to start up Android Debug bridge via \texttt{ddmlib} library API. \texttt{AndroidBridge} instance of container scope is produced and Android bridge is connected. After Android bridge is up and running, \texttt{AndroidBridgeInitialized} event is fired and execution is passed to \texttt{AndroidDeviceSelector} implementation.
 
 			\subsubsection{Emulator}
 	
