@@ -13,6 +13,7 @@
 \usepackage{paralist}
 \usepackage{textcomp}
 \usepackage{enumitem}
+\usepackage[absolute]{textpos}
 
 \clubpenalty=300
 \widowpenalty=300
@@ -122,6 +123,13 @@
 
 \FrontMatter
 \ThesisTitlePage
+
+\newpage
+\thispagestyle{empty}
+\begin{textblock*}{\paperwidth}(0mm,0mm)
+   \noindent\includegraphics[width=\paperwidth,height=\paperheight]{resources/zadanie.pdf}
+\end{textblock*}
+\mbox{}\newpage
 
 \begin{ThesisDeclaration}
 \DeclarationText
@@ -735,8 +743,6 @@ We set \texttt{AndroidSDK}\footnote{org.jboss.arquillian.container.android.manag
 		\subsection{Deploying and undeploying}
 	
 		\subsection{Stopping of a container}
-
-
 
 		\subsection{Android SD card}
 	
