@@ -666,7 +666,7 @@ At high level, Android container consists of these Maven based sub-projects (by 
 	\item{\texttt{android-container-spi}: implements classes for events to be fired to control execution path for Android container}
 	\item{\texttt{android-multiple-containers}: implements custom implementation of container registration for Arquillian so more than one container adapter can be present at class path during runtime}
 	\item{\texttt{pom.xml}: aggregates all modules, serves as a parent via which the whole project is built, packaged and installed.}
-\end{itemize} 
+\end{itemize}
 
 To reflect parent-child relationship from the Maven point of view, the following figure~\ref{fig:android_container_maven_modules} captures Android container modules and this relationship.
 
@@ -683,23 +683,47 @@ To reflect parent-child relationship from the Maven point of view, the following
 
 	\section{Implementation of container lifecycle}
 
-	\section{Extension for multiple containers}
+		\subsection{Extension for multiple containers}
 
-	\subsection{Configuration}	
+		\subsection{Configuration}
 	
-	\subsection{Starting of a container}
+		\subsection{Starting of a container}
 	
-	\subsection{Deploying and undeploying}
+		\subsection{Deploying and undeploying}
 	
-	\subsection{Stopping of a container}
+		\subsection{Stopping of a container}
 	
-	\subsection{Android SD card}	
+		\subsection{Android SD card}
 	
-	\subsection{Usage}
+	\section{Usage}
+
+After the explanation of the internal workings of Android container, we are going to show the reader possible use cases how Android container abstraction can be used. Various scenarios are discussed.
+
+We start with the presentation of a simple Android container test which runs tests as a client. After that, we show how Android container can be used in connection with other type of container e.g. JBoss AS. This use case shows how different container adapter implementations can be put in one test because of arquillian-multiple-containers extension. In the end, the example of executing tests in two different Android containers will be given.
+
+		\subsection{Android container test}
+
+Our test case review starts with a simple Android container test execution. The test is going to be run as the client test. Since every Arquillian test has to have \texttt{@Deployment} method, we create a dummy archive which would be installed (unmodified because of \texttt{@RunAsClient} annotation on class) on the injected \texttt{@AndroidDevice} instance.
+
+These kinds of tests are useful when using just \texttt{AndroidDevice} and its methods alone. We do not have any additional plugins on class path but Android container itself so we can not modify deployment nor install it on the device. The deployment method has to be specified since it is there for the completeness and satisfaction of Arquillian API.
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Android container test]{src/android_test_01.java}
+
+		\subsection{Mixed container adapters test}
+
+By mixing different container adapter implementations, we can achieve testing against two containers in one test. We have to add ordinary container adapter on class path and specify class which implements \texttt{DeployableContainer} interface in \texttt{adapterImpl} property in \linebreak \texttt{arquillian.xml}. When we want to use e.g. Android container and JBoss AS, we need to put both adapter dependencies in Maven's \texttt{pom.xml}. \texttt{arquillian\--multiple-containers} takes care of registering these two container implementations into Arquillian. After that, we can create two deployment methods which match described containers and we can run tests against these deployments afterwards as expected.
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Mixed container adapters test example]{src/android_test_02.java}
 	
-		\subsubsection{Mixed container adapters}
-	
-		\subsubsection{Multiple Android containers}
+It is important to say that we have to put \texttt{@ArquillianResource} as \texttt{test01} method argument since this class "runs" in both containers so this injection point could not be satisfied at JBoss AS side. Android device is \texttt{@ContainerScoped} so when another container takes over, instance of the Android device is no more visible. This injection point has to be recognized only in the Android context. We achieve this by adding \texttt{@OperateOnDeployment} annotation which targets our container on the test method.
+
+		\subsection{Multiple Android containers test}
+
+The last example how Android container can be used is dedicated for showing two Android containers in one test. When a user wants to use multiple \texttt{AndroidDevice}s, he has to specify against which deployments and containers these tests have to be executed. Once again, we are using client running mode.  
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Multiple Android containers test]{src/android_test_03.java}
+
+It is important to note that we are using just one injection point but every test method has its own instance of \texttt{AndroidDevice} injected (so container), for \texttt{test01} there is \texttt{android1} device injected but for \texttt{test02} there is \texttt{android2} device used.
 
 \chapter{Integration of web testing}
 
