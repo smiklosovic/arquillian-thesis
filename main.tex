@@ -670,6 +670,10 @@ At high level, Android container consists of these Maven based sub-projects (by 
 
 To reflect parent-child relationship from the Maven point of view, the following figure~\ref{fig:android_container_maven_modules} captures Android container modules and this relationship.
 
+From the design point of view, Android container execution flow is event-driven which means the flow from one part of program to another is based on message passing as described previously. By designing Android container this way, Android container is highly modular. There is not spaghetti-like code not only because of objected oriented approach but also because we can isolate the responsibility of implementation classes very easily and precisely.
+
+By event-driven approach, extensions of Android container are written relatively easily as well. Even if we do not know how particular functionality will be implemented by future extensions, by firing and observing events we are providing extension points the third party software can rely on. Android container just offers these events to be observed, processed and fired back. Since firing of messages directs execution flow, integration of external extensions which have to be put on class path at runtime guarantees that Android container is pluggable.
+
 \begin{figure}[h!tb]
 	\centering
 	\includegraphics[width=.8\textwidth]{resources/android-container-modules.png}
@@ -683,10 +687,6 @@ It is clear that we have to interact with actual Android device in some way. And
 
 In order to be able to arrange interaction with Android devices, there has to be Android SDK installed on the host computer. Android SDK bundles all existing versions of AVD\footnote{Android Virtual Device}, provides all commands for creating AVD, starting emulator, creating Android SD card and so on. It is crucial to have Android SDK installed on host computer when testing. Without Android SDK, it is not possible to bring Android into our tests. The existence and presence of Android SDK is tested in Android container. Its location is typically reflected by \texttt{ANDROID\_HOME} system property, it can be changed in container configuration to any arbitrary location.
 
-	\section{Event driven approach}
-
-	
-	
 	\section{Extension for multiple containers}
 
 In order to suppress the limitation of Arquillian container abstraction - using only one implementation of \texttt{DeployableContainer} on the classpath at time - there is the module \texttt{arquillian-multiple-containers} implemented. The very first thing which Arquillian does while executing the testing lifecycle is to read Arquillian descriptor in \texttt{arquillian.xml} and figure out which containers are about to be registered.
