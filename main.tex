@@ -775,9 +775,26 @@ To sum up the previously written about starting of Android container, the follow
 
 		\subsection{Stopping of a container}
 
+Stopping of Android container is based on same principle as its starting - it is event driven. Arquillian container lifecycle initiates stopping of any container by \texttt{stop} method of \texttt{DeployableContainer} implementation. \texttt{stop} method does nothing but fires stopping event called \texttt{AndroidContainerStop}.
+
+Stopping event is observed in \texttt{AndroidEmulatorShutdown} where it subsequently brings Android device down. Physical Android device (e.g. mobile phone) is not shut down. If physical device is detected, shutting process is skipped. Virtual Android device is shut down only if Arquillian started it previously meaning when Arquillian did not connect to already running Android device but Arquillian had to start it on its own.
+
+As previously described, Android device can be dynamically generated so after tests are finished it is time to delete whole AVD as well. The detection of generated AVD triggers \texttt{AndroidVirtualDeviceDelete} event which is observed by \texttt{AndroidVirtualDeviceManager}. After AVD is deleted, an event of \texttt{AndroidVirtulDeviceDeleted} is fired. This event is not observed by anyone and it servers just as a hook to implement other functionality, if required.
+
+Deletion of AVD returns control back to \texttt{AndroidEmulatorShutdown} which in turn fires \texttt{AndroidEmulatorShuttedDown} event. This event is finally observed by already known \texttt{AndroidBridgeConnector} which terminates Android debug bridge and fires appropriate event about this fact - \texttt{AndroidBridgeTerminated}. An event about termination of Android debug bridge is observed by the same class again but by other method. The catching of this event is provided only for possible further extensions which can rely on terminating of Android bridge and could do other operations which are by time of this writing unknown.
+
+The event flow as the figure to get more convenient picture what is happening is tracked on the figure \ref{fig:container_shutdown}. 
+\newpage
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=120mm]{img/container-shutdown.png}
+	\caption{Arquillian Android container shutdown event tree}
+	\label{fig:container_shutdown}
+\end{figure}
+
 		\subsection{Android SD card}
 	
-		\subsection{Deploying and undeploying}	
+		\subsection{Deploying and undeploying}
 	
 	\section{Usage}
 
