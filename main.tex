@@ -794,11 +794,28 @@ The event flow as the figure to get more convenient picture what is happening is
 
 		\subsection{Android SD card}
 	
+Every instance of emulator can function with SD card which some particular emulator is using for storing additional data or for installation of applications during or before test execution. Management of the SD card for Android emulator is carried out automatically when we start Android emulator via Android GUI application or \texttt{emulator} command. We can create SD card of any size and use it intuitively via already existing application or by command \texttt{mksdcard} which is bundled in Android SDK distribution.
+
+This concept is broken when we are using Android container. When we are using more then one emulator and SD card is used, these emulators are using the same SD card which results in the clash. Additionally, we can not easily click around in GUI as previously and there has to be a way how to control creation and deletion of SD card on the fly. Android container is capable to manage SD cards. SD card is configured similarly as Android container itself via configuration properties in container configuration in \texttt{arquillian.xml}. Every instance of emulator can have one and only one SD card. When using SD card, we have to specify its size and location on the disk. In case SD card does not exist, Android container implementation creates it automatically.
+
+Android container implements wrapper around SD card so we can use it transparently in the programmatic way. SD card abstraction is implemented in \texttt{AndroidSDCard}\footnote{in org.jboss.arquillian.container.android.managed.impl package} and its lifecycle is controlled via implementation of \texttt{AndroidSDCardManager}. \texttt{AndroidSDCardManager} is listening to two kinds of events. One event is observed for creating of SD card - \texttt{AndroidSDCardCreate}. Another one is used for deleting SD card - \texttt{AndroidSDCardDelete}.
+
+The SD card location is taken from \texttt{java.io.tmpdir} system property. Sane defaults about is size (128 megabytes) and label name are provided as well. All these configuration properties can be modified dynamically via their corresponding properties in \texttt{arquillian.xml} and missing file name of SD card is generated as well as missing AVD name by already mentioned \texttt{IdentifierGenerator}.
+
+SD card for Android emulator is created (and subsequently deleted when needed) before executing of emulator process. Emulator process has to use SD card upon its start so we need to fire events before execution is done. The following figure brings the flow of events dealing with SD card to reader for better clarity:
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=120mm]{img/container-sdcards.png}
+	\caption{Arquillian Android container SD card lifecycle}
+	\label{fig:container_sdcard}
+\end{figure}
+	
 		\subsection{Deploying and undeploying}
 	
 	\section{Usage}
 
-After the explanation of the internal workings of Android container, we are going to show	 possible use cases how Android container abstraction can be used. Various scenarios are discussed.
+After the explanation of the internal workings of Android container, we are going to show possible use cases how Android container abstraction can be used. Various scenarios are discussed.
 
 We start with the presentation of a simple Android container test which runs tests as a client. After that, we show how Android container can be used in connection with other type of container e.g. JBoss AS. This use case shows how different container adapter implementations can be put in one test because of arquillian-multiple-containers extension. In the end, the example of executing tests in two different Android containers will be given.
 
@@ -827,6 +844,8 @@ The last example how Android container can be used is dedicated for showing two 
 \lstinputlisting[language=Java,label=pop-pipe,caption=Multiple Android containers test]{src/android_test_03.java}
 
 It is important to note that we are using just one injection point but every test method has its own instance of \texttt{AndroidDevice} injected (so container), for \texttt{test01} there is \texttt{android1} device injected but for \texttt{test02} there is \texttt{android2} device used.
+
+	\section{Conclusion}
 
 \chapter{Integration of web testing}
 
