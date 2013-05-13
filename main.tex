@@ -738,7 +738,7 @@ We set \texttt{AndroidSDK}\footnote{org.jboss.arquillian.container.android.manag
 
 		\subsection{Starting of a container}
 
-After configuration of container instance, the actual start is going to unfold via container's \texttt{start} method. The only role of this methods is to fire \texttt{AndroidContainerStart} event which will pass execution to \texttt{AndroidBridgeConnector}\footnote{all next classes are located in org.jboss.arquillian.container.android.managed.impl package}. \texttt{AndroidBridgeConnector} observes this event in \texttt{initAndroidDebugBridge} method. The responsibility of the bridge connector is to start up Android Debug bridge via \texttt{ddmlib} library API. \texttt{AndroidBridge} instance of container scope is produced and Android bridge is connected. After Android bridge is up and running, \texttt{AndroidBridgeInitialized} event is fired and execution is passed to \texttt{AndroidDeviceSelector} implementation.
+After configuration of container instance, the actual start is going to unfold via container's \texttt{start} method. The only role of this method is to fire \texttt{AndroidContainerStart} event which will pass execution to \texttt{AndroidBridgeConnector}\footnote{all next classes are located in org.jboss.arquillian.container.android.managed.impl package}. \texttt{AndroidBridgeConnector} observes this event in \texttt{initAndroidDebugBridge} method. The responsibility of the bridge connector is to start up Android Debug bridge via \texttt{ddmlib} library API. \texttt{AndroidBridge} instance of container scope is produced and Android bridge is connected. After Android bridge is up and running, \texttt{AndroidBridgeInitialized} event is fired and execution is passed to \texttt{AndroidDeviceSelector} implementation.
 
 \texttt{AndroidDeviceSelector} is the central place where the decision about the connection to already starting emulator (or real physical device) or the starting of already existing AVD is made. We can even create AVD dynamically as will be presented lately.
 
@@ -746,15 +746,38 @@ The goal of the implementation of \texttt{AndroidDeviceSelector}\footnote{class 
 
 \lstinputlisting[language=Java,label=pop-pipe,caption=Pseudocode of device selector logic]{src/device_selector_pseudo.java}
 
-			\subsubsection{Emulator}
-	
-			\subsubsection{Physical device}
-	
-		\subsection{Deploying and undeploying}
-	
+The fact that physical device will be chosen is reflected by configuration property of container called \texttt{serialId} which holds serial number of physical device\footnote{e.g. like <property name="serialId">42583930325742355458</property>}.
+
+In addition, while trying to choose a virtual device, if \texttt{consolePort} property which holds the number of console port where to-be chosen running emulator should be hooked is specified, we try to connect to that emulator. When we fail to do so, meaning no such emulator which is listening to that \texttt{consolePort} exists, \texttt{AndroidExecutionException} is thrown because there is no more connection information to use in order to make connection successful. 
+
+When name of emulator as \texttt{avdName} is specified but \texttt{consolePort} was not, Android container adapter tries to connect to the first running emulator of such \texttt{avdName}. There could be started more then one emulator of such AVD so when no console port is specified to distinguish between them, we just pick the first one - as Android Debug Bridge delegate does for this purpose.
+
+While dealing with connection to running emulator, the ideal situation is when both \texttt{avdName} and \texttt{consolePort} are specified, getting rid of all uncertainty. In all cases of successful connection to running emulator or physical device, an event of \texttt{AndroidDeviceReady} is fired to provide a hook for other parts of Android adapter implementation to rely on and perform other steps.
+
+If we fail to get an emulator instance in all above steps, the control flow is split into two cases. The first case triggers to happen when we do have \texttt{avdName} specified but no such emulator (of that device name) is running. In that case, \texttt{AndroidVirtualDeviceAvailable} event is fired. By firing of this event, we are telling that there is AVD of such name in the system but no emulator is started yet, so we have to start it dynamically. However, when no \texttt{avdName} was specified, we need to figure some out. That generated string will be used as the name of AVD while creating it for us dynamically by Android SDK command, as explained further. We could have \texttt{avdName} specified but no such AVD does have to exist. If there is not AVD of such \texttt{avdName} present in the host system, an event \texttt{AndroidVirtualDeviceCreate} is fired saying that it passes control to some other part of Android event model to deal with creating AVD of such \texttt{avdName} dynamically and to start it for us after that.
+
+Generated AVD is automatically deleted after tests are finished. By this approach, we do not have to specify nothing but \texttt{adapterImplClass} of Android container in \texttt{arquillian.xml} and all will be generated for us automatically, even including creation of AVD device from scratch, using sane defaults.
+
+Identifiers are strings generated randomly as UUID-s via implementation of \texttt{IdentifierGenerator}\footnote{consult AndroidIdentifierGenerator in org.jboss.arquillian.container.android.utils}. Identified generator does not create only random strings for AVD name but it also provides random names and labels for Android SD card. Types of identifiers which \texttt{IdentifierGenerator} creates are reflected by \texttt{IdentifierType}\footnote{in org.jboss.arquillian.container.android.utils package} enumeration.
+
+After firing of \texttt{AndroidVirtualDeviceCreate} event which initiates AVD creation, this event is observed by \texttt{AndroidVirtualDeviceManager}. Device manager executes external \texttt{android} process which creates desired AVD. We have full control to specify which kind of Android virtual device we want to test on, e.g. its ABI, API level and so on. These configuration properties can be found in references. Once custom AVD is made, event \texttt{AndroidVirtualDeviceAvailable} is fired and is processed by \texttt{AndroidEmulatorStartup}.
+
+Up to this point, before \texttt{AndroidEmulatorStartup} takes over, we have existing AVD and everything is prepared to start emulator process itself on a host computer. The starting of an emulator is task for \texttt{AndroidEmulatorStartup}. Android startup class produces instances of \texttt{AndroidEmulator} and \texttt{AndroidDevice} which are, as usually, container scoped. The timeout before which Android emulator has to be fully prepared\footnote{controlled with emulatorBootupTimeoutInSeconds configuration property} can be set according to our need in container configuration. If timeout passes and emulator is still not booted up fully, an exception is thrown which leaves the booting process unsuccessful, as the whole execution of tests will be. Appropriate timeout limit stops time demanding booting process which is unacceptable for our testing environment. After booting emulator in required timeout limit, \texttt{AndroidDeviceReady} event is fired.
+
+To sum up the previously written about starting of Android container, the following figure gives clear and intuitive execution tree how the whole starting logic is performed:
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=120mm]{img/container-startup.png}
+	\caption{Arquillian Android container startup event tree}
+	\label{fig:container_startup}
+\end{figure}
+
 		\subsection{Stopping of a container}
 
 		\subsection{Android SD card}
+	
+		\subsection{Deploying and undeploying}	
 	
 	\section{Usage}
 
