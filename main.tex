@@ -859,11 +859,7 @@ It is important to note that we are using just one injection point but every tes
 
 	\section{Conclusion}
 
-In this chapter, implementation of Arquillian Android container was given. We proceeded through extension for multiple containers to override default restriction of Arquillian to have more than one kind of container adapter on class path in run time. Basics and principles of configuration of Android container were given as well, complete configuration reference can be found in attached resources.
-
-Implementation of container life cycle took over. Description of container start and stop was given with details about event flow. Last but not least, section about Android SD card implementation enabled user to mimic SD card usage for testing purpose. After that, deploying and undeploying of packages was explained as the activity which Android container skips. Deployment management is the task of specific extensions which would enable user to test in specific way, in our case web or native testing.
-
-The reader got familiar with usage of Android container in context of usual Arquillain test and various testing scenarios were discussed as well - single Android container test, mixed container adapters and multiple Android containers to name them concretely. 
+In this chapter, implementation of Arquillian Android container was given. We proceeded through extension for multiple containers to override default restriction of Arquillian to have more than one kind of container adapter on class path in run time. Basics and principles of configuration of Android container were given as well, complete configuration reference can be found in attached resources. Implementation of container life cycle took over. Description of container start and stop was given with details about event flow. Last but not least, section about Android SD card implementation enabled user to mimic SD card usage for testing purpose. After that, deploying and undeploying of packages was explained as the activity which Android container skips. Deployment management is the task of specific extensions which would enable user to test in specific way, in our case web or native testing. The reader got familiar with usage of Android container in context of usual Arquillain test and various testing scenarios were discussed as well.
 
 \chapter{Integration of web testing}
 
@@ -894,6 +890,14 @@ Uninstallation of Android server after test execution is done by \texttt{Android
 Both events fired after installation and uninstallation are not observed by anyone at this moment but providing them offers the possibility to hook other functionality by any other extension as shown many times before.
 
 Application container where our web application under test is deployed has to be accessed from external IP address of the host. This is because if we accessed it from \texttt{localhost} from Android point of view, this \texttt{localhost} would be viewed as loopback address on Android device and there is no application server to reach, obviously. Figure \ref{fig:arquillian_drone_web} might be helpful for better understanding of just explained.
+
+\section{Test and usage}
+
+Arquillian Android Drone for web testing is brought into Maven via its dependency\footnote{org.jboss.arquillian.extension:arquillian-container-android-drone-web}. After that, we have to write configuration element into \texttt{arquillian.xml} letting Arquillian know about its presence: 
+
+\lstinputlisting[language=XML,label=pop-pipe,caption=Web Drone extension registration]{src/android-drone-arquillian.xml}
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=WebDriver test]{src/webdriver_test.java}
 
 \begin{figure}[!ht]
 	\centering

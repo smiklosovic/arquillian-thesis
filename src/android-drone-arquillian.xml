@@ -1,0 +1,7 @@
+<extension qualifier="android-drone">
+  <!-- Path to Android server,
+       not necessary when apk is on classpath -->
+  <property name="androidServerApk">
+    /path/to/android/server.apk
+  </property>
+</extension>

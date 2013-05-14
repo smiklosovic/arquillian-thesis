@@ -6,5 +6,5 @@ public class EventToFire {}
 
 // actual  firing of the event
 public void observingMethod(@Observes SomeEvent e) {
-    event.fire(new EventToFire());
+  event.fire(new EventToFire());
 }
