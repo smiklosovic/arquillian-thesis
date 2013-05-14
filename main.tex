@@ -407,9 +407,9 @@ JUnit is added to Maven-based project as a dependency. All tests reside by defau
 
 The example of simple JUnit test is following. Its core features and life cycle of the test class will be discussed further.
 
-\newpage
-
 \lstinputlisting[language=Java,label=pop-pipe,caption=Example of JUnit test]{src/ExampleTestCase.java}
+
+\newpage
 
 A unit test is distinguished by JUnit when a test class is annotated with \texttt{@RunWith} annotation. Argument of \texttt{@RunWith} annotation is so-called \textit{test runner}. Test runner specifies how exactly test class, in our example \texttt{ExampleTestCase}, is treated. \texttt{JUnit4}\footnote{in org.junit.runners package} is the default runner for JUnit. It extends \texttt{BlockJUnit4ClassRunner} in the same package. Every runner has to extend this base runner. Custom JUnit runners are changing the default behavior of the test execution.
 
@@ -859,7 +859,7 @@ It is important to note that we are using just one injection point but every tes
 
 	\section{Conclusion}
 
-In this chapter, implementation of Arquillian Android container was given. We proceeded through extension for multiple containers to override default restriction of Arquillian to have more than one kind of container adapter on class path in run time. Basics and principles of configuration of Android container were given as well, complete configuration reference can be found in attached resources. Implementation of container life cycle took over. Description of container start and stop was given with details about event flow. Last but not least, section about Android SD card implementation enabled user to mimic SD card usage for testing purpose. After that, deploying and undeploying of packages was explained as the activity which Android container skips. Deployment management is the task of specific extensions which would enable user to test in specific way, in our case web or native testing. The reader got familiar with usage of Android container in context of usual Arquillain test and various testing scenarios were discussed as well.
+In this chapter, implementation of Arquillian Android container was given. We proceeded through extension for multiple containers to override default restriction of Arquillian to have more than one kind of container adapter on class path in run time. Basics and principles of configuration of Android container were given as well, complete configuration reference can be found in attached resources. Implementation of container life cycle took over. Description of container start and stop was given with details about event flow. Last but not least, section about Android SD card implementation enabled user to mimic SD card usage for testing purpose. After that, deploying and undeploying of packages was explained as the activity which Android container skips. Deployment management is the task of specific extensions which would enable user to test in specific way, in our case web or native testing. The reader got familiar with usage of Android container in context of usual Arquillian test and various testing scenarios were discussed as well.
 
 \chapter{Integration of web testing}
 
