@@ -859,7 +859,7 @@ It is important to note that we are using just one injection point but every tes
 
 	\section{Conclusion}
 
-In this chapter, implementation of Arquillian Android container was given. We proceed through extension for multiple containers to override default restriction of Arquillian to have more than one kind of container adapter on class path in run time. Basics and principles of configuration of Android container were given as well, complete configuration reference can be found in attached resources.
+In this chapter, implementation of Arquillian Android container was given. We proceeded through extension for multiple containers to override default restriction of Arquillian to have more than one kind of container adapter on class path in run time. Basics and principles of configuration of Android container were given as well, complete configuration reference can be found in attached resources.
 
 Implementation of container life cycle took over. Description of container start and stop was given with details about event flow. Last but not least, section about Android SD card implementation enabled user to mimic SD card usage for testing purpose. After that, deploying and undeploying of packages was explained as the activity which Android container skips. Deployment management is the task of specific extensions which would enable user to test in specific way, in our case web or native testing.
 
@@ -867,7 +867,40 @@ The reader got familiar with usage of Android container in context of usual Arqu
 
 \chapter{Integration of web testing}
 
+As described earlier, Android container offers events to hook to in order to extend or implement additional functionality. Android container does not know nothing about testing but it starts and prepares virtual or physical device for tests. Concrete methodology of testing is let on the external implementations. Doing so, we can provide many ways how to test in connection with Android container and third party libraries and extension can profit from Android container greatly since it is not necessary anymore to deal with device management.
+
+Functional testing of web pages and web applications is implemented in the extension called "Arquillian Android Drone for web". In the following chapter, the reader will be introduced to this extension and its implementation details will be given as well.
+
 	\section{Arquillian Android Drone for web testing}
+
+Arquillian Android Drone for web\footnote{further will be referenced as "web Drone"} is standalone Maven dependency which uses various modules from Android container (to name them -api, -spi and -managed). By putting this extension on class path in test run time, we are telling Android container to test web applications.
+
+The backend of functional web testing is Selenium. To be able to communicate from Selenium to Android device, there has to be installed so called \textit{Android server} on Android device. Android server is simple server which acts as a layer between Selenium and Android device browser. Android server is free to download from Selenium project and we can install it at Android device as any other application - it is bundled in file \texttt{android-server.apk}.
+
+In JBoss universe, Arquillian Drone extension for Arquillian extends pure Selenium and provides a simple way how to include functional tests for your application with web-based user interface. Arquillian Drone brings power of Selenium into Arquillian framework. Selenium provides a language how to communicate with a browser, like filling the forms, navigating on the pages and validating their content.\textbf{ref https://docs.jboss.org/author/display/ARQ/Drone}
+
+The goal of Arquillian Android Drone for web testing is to install \texttt{android-server.apk} automatically into running Android container backed by real or virtual Android device so we do not have to install that application over and over again and it is installed (and uninstalled) automatically upon test execution. Android Drone for web testing also prepares and setups communication between Selenium framework and Android device, what is done specifically is further discussed.
+
+	\subsection{Implementation}
+
+Web Drone hooks to \texttt{@AndroidDeviceReady} event fired from Android container when container is fully up and running. Web Drone observes this event in \texttt{AndroidDroneWebDriverInstaller}\footnote{in org.jboss.arquillian.android.drone.web.impl package}. In order to be able to interact with Android device out of container implementation, it is transferred to web Drone implementation via \texttt{AndroidDeviceReady} event.
+
+The first task for web Drone is to install Android server APK of Selenium to Android device. Installation is executed via abstraction of \texttt{AndroidDevice} implementation. Package is installed to Android device by \texttt{installPackage} method of \texttt{AndroidDevice} instance and subsequently the server application is started on Android device by executing shell command\footnote{am start -a android.intent.action.MAIN -n org.openqa.selenium.android.app/ .MainActivity} at Android device. Shell command is executed inside Android device but its execution is invoked at Android Debug Bridge which is internally capable to execute shell commands for Android devices remotely via console port.
+
+After successful installation of Android server, port forwarding is following. Android server, now installed at Android device, is listening to port 8080 at Android device. The default address, from host point of view, from which browser specific commands are sent to device, is \texttt{http://localhost:14444/wd/hub}. WebDriver extension from Selenium is listening to this address. By port forwarding (from local port 14444 to remote port 8080), the communication channel between Selenium (WebDriver) and Android server is up. Communication between these components is based on REST API and diving into details is out of scope. Having Android server installed and ports forwarded, the event \texttt{AndroidDroneWebDriverInstalled} is fired.
+
+Uninstallation of Android server after test execution is done by \texttt{AndroidDroneWebDriverUninstaller}. The event announcing the successful uninstallation - \texttt{AndroidDroneWebDriverUninstalled} - is fired eventually.
+
+Both events fired after installation and uninstallation are not observed by anyone at this moment but providing them offers the possibility to hook other functionality by any other extension as shown many times before.
+
+Application container where our web application under test is deployed has to be accessed from external IP address of the host. This is because if we accessed it from \texttt{localhost} from Android point of view, this \texttt{localhost} would be viewed as loopback address on Android device and there is no application server to reach, obviously. Figure \ref{fig:arquillian_drone_web} might be helpful for better understanding of just explained.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[origin=c,width=95mm]{img/webdriver2.png}
+	\caption{Arquillian Android Drone for web testing}
+	\label{fig:arquillian_drone_web}
+\end{figure}
 
 \chapter{Investigation for native testing}
 
@@ -882,7 +915,6 @@ The reader got familiar with usage of Android container in context of usual Arqu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %       A P P E N D I X  
-%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \appendix
