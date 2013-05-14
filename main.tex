@@ -897,6 +897,10 @@ Arquillian Android Drone for web testing is brought into Maven via its dependenc
 
 \lstinputlisting[language=XML,label=pop-pipe,caption=Web Drone extension registration]{src/android-drone-arquillian.xml}
 
+Surprisingly, when writing functional tests, there is no mentioning about Android container nor Android Drone for web. \texttt{@Deployment} is specified only for application container where web application is deployed. This fact is quite logical, we do not deploy nothing on Android device at all. We do not have to specify anything in test in order to install \texttt{android-server.apk} into Android device as well. It is the job of Android Drone extension which does this automatically behind the curtains so we can focus on writing tests stright away.
+
+We have injected \texttt{ArquillianResource} for getting address of deployed application for opening web page. We also injected \texttt{@Drone} from WebDriver - via this resource we are executing all requests and commands for functional testing. Interaction with this class operates in the end with Android device browser.
+
 \lstinputlisting[language=Java,label=pop-pipe,caption=WebDriver test]{src/webdriver_test.java}
 
 \begin{figure}[!ht]
