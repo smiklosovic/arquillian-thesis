@@ -912,7 +912,70 @@ We have injected \texttt{ArquillianResource} for getting address of deployed app
 
 \chapter{Investigation for native testing}
 
-	\section{Arquillian Android Drone for native testing}
+After implementation of web testing by Android Drone for web only the native testing of Android applications remains to solve in context of Arquillian Android container. Web testing was implemented via standalone extension into Arquillian Android container. Only testing infrastructure was set up by installation of Android server APK from Selenium project which enabled communication from Selenium WebDriver. Android server from Selenium acted as a bridge between WebDriver and Android device where commands simulating real functionality of ordinary user were sent.
+
+The similar approach seems to be desired for native application testing as well. Firstly, when testing native application, we have to get that application from user's space to Android device. In other words, we have to install an application under test\footnote{will be referenced as \textit{aut}} to Android device and set up the underlying infrastructure in order to be able to carry out functional tests. The next step is to provide the layer between \texttt{aut} and client side. There should be similar component as Android server APK application but for native testing instead of web testing.
+
+	\section{Deployment of native application}
+
+Native Android application is packaged as \textit{APK} file, having \texttt{.apk} file extension. APK file is by its format just ordinary JAR file but named differently. So then, we can used ShrinkWrap packagin with advantage because APK file is just renamed JAR file but ShrinkWrap treats them internally the same way - they are both ordinary ZIP files - internal layout of resources is different, indeed, but in order to specify deployment for Arquillian, we can work with APK files without hassles.
+
+Deployment of Android package which is meant to be installed into Android device upon deployment phase is specified in \texttt{@Deployment} method of test class. There has to be used \texttt{JavaArchive.class} kind of archive. In fact, APK file \textit{is} JAR archive but it is just named differently.
+
+Delivering of APK file to test is up to tester. Since application to test is ShrinkWrap archive, we could easily construct APK file in \texttt{@Deployment} at will from scratch. At this place, we can see true importance of ShrinkWrap tool in action. The same way we constructed web application or business logic we were interested into, the same way we can construct native Android application with custom resources, putting anything we want into it, totally control what is under test.
+
+Since we do not have to enrich APK archive after \texttt{@Deployment} with any additional resources which are added by Arquillian itself internally (e.g. container and test API for remote test execution), we have to tell Arquillian that we just want to send APK file \textit{as-is}. This intention is done with \texttt{testable = false} annotation parameter of \texttt{@Deployment} method. By specifying this parameter, Arquillian does not put anything else inside APK, leaving APK file the same as we constructed it in \texttt{@Deployment} method.
+
+Installation of Android application to Android device is manually doable via \texttt{adb} command (Android Debug Bridge). \texttt{adb} is versatile command for package and application management of Android device, both for virtual and physical device. ADB is the part of Android SDK suite which has to be present in system when interacting with Android platform.
+
+	\section{Instrumentation of application under test}
+	
+	\section{Implementation}
+
+Android Drone for native testing uses the same pattern as web-related Drone. It is implemented as standalone Maven dependency which has to be put on class path while testing in order to use it in testing process. Since native Drone is ordinary Arquillian extension, it is registered via its \texttt{LoadableExtension} by \texttt{AndroidDroneNativeExtension}\footnote{in org.jboss.arquillian.extension.android.drone package}.
+
+Extension has only two observers. One observes events in order to configure extension from \texttt{arquillian.xml} descriptor, the other one observes events signaling deployment and undeployment actions.
+
+Configuration observer is placed in \texttt{AndroidDroneConfigurator}\footnote{in org.jboss.arquillian.android.drone.impl package}. Configurator observes \texttt{BeforeSuite} event which is internally fired by Arquillian upon testing start. It is the first event fired in Arquillian. After this event, container life cycle is initiated. Waiting and reacting for \texttt{@BeforeSuite} event gives perfect time for configuration of all extensions which are being registered into Arquillian.
+
+Android native Drone parses Arquillian descriptor looking after \texttt{android-drone-native} extension. For sake of completeness, Android native drone is typically configured as follows:
+
+\lstinputlisting[language=XML,label=pop-pipe,caption=Arquillian native Drone extension registration]{src/android-drone-native-arquillian.xml}
+
+After parsing of configuration descriptor by Drone configurator, Android container configuration itself is parsed as well. The container life cycle of Android container is initiated after that and execution flow is returned back when Android container implementation fires \texttt{AndroidDeployArchive} event from \texttt{deploy} method. 
+
+\texttt{AndroidDroneArchiveDeployer}\footnote{in org.jboss.arquillian.android.drone.impl package} is responsible for observing of this event which triggers whole deployment logic. Undeployment is done similarly by firing \texttt{AndroidUndeployArchive} from Android container implementation and observing that undeployment event in Drone's deployer class.
+
+Since there have to be changes made in Selendroid instrumentation package as described earlier, the deployment logic is not so linear. First of all, all resources and packages are going to be treated in special temporary directory which defaults to have the parent in \texttt{java.io.tmpdir} and has random name as UUID identifier. By doing so, there is one central place all modifications to packages are done and it is easy to clean this working directory after tests are finished, keeping system clean of garbage.
+
+After that, Selendroid server as defined in \texttt{androidServerApk} in Arquillian descriptor is copied to working directory. \texttt{@Deployment} as APK package is converted internally to \texttt{Archive} from ShrinkWrap into normal file and copied to temporary directory as well.
+
+Rebuilding of copied Selendroid server takes place afterwards. Rebuilding logic of Selendroid server is located in \texttt{SelendroidRebuilder}\footnote{in org.jboss.arquillian.android.drone.impl package}. To rebuild the server, template of \texttt{AndroidManifest.xml} is copied from \texttt{src/main/resources} of Android native Drone project into temporary directory. Copied Android manifest is filtered to replace default target package string with the base package name of \textit{aut}. This process ensures that once Selendroid server is installed on Android device, it will instrument just deployed \textit{aut}. Modified Android manifest is attached to Selendroid server and whole package is resigned because its content has changed (by updated Android manifest file).
+
+Resigning is done back in \texttt{deploy} method of archive deployer where \texttt{APKSigner}\footnote{in org.jboss.arquillian.android.drone.impl package} takes over. Signer signs modified package once again with debug key. Signing process is performed with \texttt{jarsigner} from JDK distribution.
+
+In the end of deployment process, both \textit{aut} and modified Selendroid server are installed to Android device and instrumentation activity is started at Android side.\footnote{am instrument -e main\_activity 'base.app.pkg' org.openqa.selendroid/ .ServerInstrumentation'}. By execution of this command, \texttt{aut} is started and all is prepared for client side of testing to initiate testing calls and methods, ideally via WebDriver client API. 
+
+
+Regarding of enabling the communication between client and Selendroid server, port forwarding for client to Android device has to be carried out just the same way as for web Drone, now forwarding port 8080 from client to 8080 of Android device. Port numbers are tweakable. 
+
+The last thing in order to have deployment process fully finished is to wait for instrumentation application to start completely. Since Selendroid server listens to HTTP communication since it has embedded custom HTTP server, we are sending requests to status address\footnote{http://localhost:8080/wd/hub/status} to wait for HTTP status 200 saying that Selendroid server is up and running and fully booted and prepared to process testing requests of the client.
+
+Undeployment logic is straightforward. Drone archive deployer uninstalls \textit{aut} and Selendroid instrumentation server after forcing \textit{aut} to quit. After uninstallation via \texttt{AndroidDevice} API, port forwarding is removed as well getting Android device into precisely the same state as before testing process.
+
+Up to writing of this thesis, there is not integration of WebDriver implemented. Implementation of Android Drone for native testing is capable of taking \textit{aut} and install it automatically into Android device with Selendroid instrumentation server providing deployment part of testing. Undeployment of all Selendroid server and \textit{aut} is implemented as well. Integration of WebDriver is pending to be done.
+
+	\section{Usage}	
+
+The goal is to make testing of native Android application not significantly different from testing of web application. By using of conventional deployment via ShrinkWrap and integrating WebDriver from Selendroid, native testing will look very familiar to user. He is just using WebDriver client API and communicates with Android application directly.
+
+% co musi byt napisane v descriptore ze android-drone-native
+
+\chapter{Conclusion}
+
+\chapter{Resources}
+
+
 
 \bibliographystyle{plain}  % bibliografický styl 
 \bibliography{bib-db}      % soubor s citovanými

@@ -1,0 +1,6 @@
+<extension qualifier="android-drone-native">
+  <!-- Path to Android instrumentation server -->
+  <property name="androidServerApk">
+    /path/to/selendroid.apk
+  </property>
+</extension>
