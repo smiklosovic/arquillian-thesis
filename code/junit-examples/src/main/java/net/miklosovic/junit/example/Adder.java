@@ -4,7 +4,7 @@ public class Adder {
 
     /**
      * Adds two positive numbers.
-     * 
+     *
      * @param a
      * @param b
      * @return sum of {@code a} and {@code b}

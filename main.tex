@@ -164,25 +164,25 @@ The result of one's activity in the manner of a tool or an application, which is
 
 In context of the Murphy's law at the beginning of this thesis, we could ironically say that it holds in software engineering very strongly. Software engineering and development of software as such strives for quality in sense of absence of bugs and smooth integration into existing solutions or functionality of the product.
 
-Quality engineering and testing methodologies in Java enterprise environment have been the subject of very vivid discussions. Couple of techniques as unit testing by testing frameworks as JUnit, TestNG and others have emerged and whole concept of programming like test driven development or eXtreme Programming have been propagating widely. 
+Quality engineering and testing methodologies in Java enterprise environment have been the subject of very vivid discussions. Couple of techniques as unit testing by testing frameworks as JUnit, TestNG and others have emerged and whole concept of programming like test driven development (TDD) or eXtreme programming (XP) have been propagating widely.
 
 Besides the unit testing as the very basic principle of testing, integration and functional testing is as important as the former one. In the zoo of frameworks and plethora of tools for Java EE platform, it is important to be sure not only components of the software solution work as expected but also their interconnection, communication and integration with enterprise application containers and other enterprise layers is functioning as well.
 
-While trying to doing so, we realize very early that it is not easy task and in lot of cases not even possible. The reason why is that we are are trying to bring the whole runtime into our tests so we are orchestrating all layers trying to fake the target environment in which our product will be running. The mocking and faking of all complex enterprise services as dependency injection, messaging or database performance and simulating system errors and communication between multiple entities in our software solution is heroic work and it is not possible to simulate exactly the same scenario multiple times and repeatedly.
+While trying to doing so, we realize very early that it is not easy task and in lot of cases not even possible. The reason is we are are trying to bring the whole run time into our tests so we are orchestrating all layers trying to fake the target environment in which our product will be running. The mocking and faking of all complex enterprise services as dependency injection, messaging or database performance and simulating system errors and communication between multiple entities in our software solution is heroic work and it is not possible to simulate exactly the same scenario multiple times and repeatedly.
 
 This thesis aims to improve functional and integration testing of web and native Android applications on JBoss platform cooperating with Android platform. The crucial role in the functional and integration testing plays Arquillian testing platform.
 
-Arquillian testing platform provides a way by which we can get rid of aforementioned impossibilities of testing cases. The core principle which stands behind Arquillian is the philosophy of bringing tests into target runtime and not otherwise - the typical way of dealing with tests so far. The imple switching of point of view makes whole enterprise testing in Java EE revolutionary. 
+Arquillian testing platform provides a way by which we can get rid of aforementioned impossibilities of testing cases. The core principle which stands behind Arquillian is the philosophy of bringing tests into target run time and not otherwise - the typical way of dealing with tests so far. The simple switching of point of view makes whole enterprise testing in Java EE revolutionary. 
 
-It is important to realize the essential component without which testing by Arquillian would be meaningless - application container or application server. The application container is a place where, roughly speaking, application is deployed and made accessible for clients. Arquillian is container agnostic, which means it does not matter against what target environment the application is tested.
+It is important to realize the essential component without which testing by Arquillian would be meaningless - application container or application server. The application container is a place where, roughly speaking, application is deployed and made accessible for clients. Arquillian is container agnostic, meaning it does not matter against which target environment the application is tested.
 
 Arquillian is not only a tool for rigid testing of enterprise services and technologies but it also provides a way how to do testing by automating a web browser in case we are trying to test functionality of some web application. There are already solutions how to automate web browser such as via Selenium (and its successor named WebDriver)- the pioneer of automated testing frameworks. JBoss community developed a tool which is based on Selenium of name Arquillian Graphene. Arquillian Graphene is designed as set of extensions for Selenium WebDriver.
 
-The functional testing by automating web browsers has its counterparts in Android platform, to name a few, Solo, Robotium or Selendroid. This thesis tries to focus on integrating these kind of tools into Arquillian environment. We try to make functional testing of Android applications as similar to web testing via Selenium as possible so we can gain from advantages of Arquillian in this direction too. 
+The functional testing by automating web browsers has its counterparts in Android platform, to name a few, Robotium\footnote{https://code.google.com/p/robotium/} or Selendroid\footnote{https://github.com/DominikDary/selendroid/wiki}. This thesis tries to focus on integrating these kind of tools into Arquillian environment. We try to make functional testing of Android applications as similar to web testing via Selenium as possible so we can gain from advantages of Arquillian in this direction too. 
 
 \chapter{On software development processes}
 
-In this chapter, we are discussing two most widely-known approaches to the development of the software - serial (or sequential) development model and iterative development model. Both models will be described and their pro et contra will be discussed. We will discuss both models in sense of their attitude to testing process or methodology too.
+In this chapter, we are discussing two most widely-known approaches to the development of the software - serial (or sequential) development model and iterative development model. Both models will be described and their pro et contra will be discussed. We will discuss both models in sense of their attitude to testing process or methodology too. Portions of this chapter were taken from \cite{jenniferDorette}.
 
 	\section{Serial development process}
 	
@@ -222,7 +222,6 @@ Test driven development is a way of programming when we are writing your tests f
 
 The process just described is called TFD (test-first development). Test driven development is understood as a TFD with refactoring. This approach to programming process is completely different from what majority of programmers are used to. The traditional view is to code some subset of the functionality and then to write tests to see if it fails or passes and react accordingly. The importance of getting tests written in advance is in the way how we think about the design of the application. We are trying to make our design the best possible in advance thinking about how some particular design is going to be helpful for us. TDD calls for the opposite way. We are focusing on new functions so every other added functionality constantly improves our design and just fits our needs.
 
-\newpage
 There are two levels of TDD:
 
 \begin{itemize}
@@ -300,7 +299,7 @@ The necessity of continuous integration server is determined by distributed natu
 
 Activities related to the continuous integration can be handled automatically or manually. Automatic builds can be executed on some preferred interval or when changes in the main repository are detected.
 
-After getting the initial image of the CI, when one wants to use CI, he needs to build and maintain an infrastructure which: \textbf{ref na fowllera}
+After getting the initial image of the CI, when one wants to use CI, he needs to build and maintain an infrastructure which: \cite{bib012}
 
 \begin{itemize}
 	\item{contains a single source repository}
@@ -315,11 +314,11 @@ As mentioned earlier, source code can be tracked in Git but other source code re
 
 It is clear that the main stress will be put on the fact that the builds and tests have to be done fast because they are done frequently. If our builds or functional and integration tests took tens of minutes or hours, it would be useless to use the TDD and XP in the Java EE environment. Tests are driving the development. Testing \emph{is} development. We are doing incremental changes, we are adding functionality frequently and piece by piece and we also integrate on-the-fly so we know better every moment how is our project doing which is only hardly doable in the sequential development model when the integration exhibits at the end of the implementation when the refactoring of the code is very hard. Continuous integration process encourages to do smaller steps and to check how successful we are, keeping the overview of the project up to date.
 
-We are also trying to run all tests in the target environment so we need take our tests to the runtime and not otherwise as it was discussed in the previous sections.
+We are also trying to run all tests in the target environment so we need take our tests to the run time and not otherwise as it was discussed in the previous sections.
 
 \chapter{Testing in Java EE environment}
 
-In the last chapter, we described development processes of various qualities and we made stress on the importance of XP and TDD. The next chapter will discuss existing tools and techniques which are used in connection with testing process described earlier. We are dividing these tools which will help us to describe the context of Arquillian testing into three categories. These tools and software compilations are helpful for ongoing explanation of Arquillian testing platform and the reader will be prepared to understand the whole model of Arquillian testing, in connection with XP, TDD and CI, much better and smoother.
+In the previous chapter, we described development processes of various qualities and we made stress on the importance of XP and TDD. The next chapter will discuss existing tools and techniques which are used in connection with testing process described earlier. We are dividing these tools which will help us to describe the context of Arquillian testing into three categories. These tools and software compilations are helpful for the subsequent explanation of Arquillian testing platform and the reader will be prepared to understand the whole model of Arquillian testing, in connection with XP, TDD and CI, much better and smoother.
 
 	\section{Tools used in JavaEE environment}
 	
@@ -329,17 +328,16 @@ Maven is so-called build automation tool. Maven is written in Java programming l
 
 By default, for every Maven-based project, the structure of directories is the same for all of them. 
 In source-related directories, Java packages are saved. The default directory layout for a project is as follows:
-
+\newpage
 \lstinputlisting[style=text,caption=A Maven project directory layout]{src/maven_layout.txt}
 
 A typical Maven build life cycle consists of sequence of phases - \texttt{prepare-resources},\texttt{compile},\texttt{package},\texttt{install}. There are always \texttt{pre} and \texttt{post} phases which can be used to register \texttt{goals} which must run prior or after a particular phase.
 
-Maven has following three predefined life cycles - \texttt{clean}, \texttt{default} and \texttt{site}. The \texttt{clean} life cycle cleans a project, the \texttt{default} life cycle builds a project and the \texttt{site} life cycle builds complete web site representation of a project into \texttt{target} directory, for example it generates Java documentation (javadocs).
+Maven has following three predefined life cycles - \texttt{clean}, \texttt{default} and \texttt{site}\cite{bib020}. The \texttt{clean} life cycle cleans a project, the \texttt{default} life cycle builds a project and the \texttt{site} life cycle builds complete web site representation of a project into \texttt{target} directory, for example it generates Java documentation (javadocs).
 
 A \texttt{goal} represents a specific load of work a plugin has to execute and doing so contributes to the building and managing of a project. The order of goals is defined by default settings which could be overridden~- we can easily define our own actions which are executed upon the build of the project. The order of execution depends on the order we specify phases and goals on the command line.
 
-Maven is mostly ridden by command line command \texttt{mvn} after which phases and goals follow. Phases and 
-goals can be chained. A goal of some plugin can be executed as:
+Maven is mostly ridden by command line command \texttt{mvn} \cite{bib021} after which phases and goals follow. Phases and goals can be chained. A goal of some plugin can be executed as:
 
 \lstinputlisting[style=command]{src/maven_execution.sh}
 
@@ -349,7 +347,7 @@ For example, when we want to clean the project (to delete the build) we have to 
 
 When specifying \texttt{package} phase, all goals and phases which proceed this phase are executed as well. For example, \texttt{test} phase is executed after \texttt{compile} phase but before \texttt{package} phase, so we are sure tests are executed and software does what it is supposed to do before packaging is carried out.
 
-The second very important role of Maven is to track \textit{dependencies}. Dependencies are stored in \textit{repositories}. By default, dependencies are downloaded from main Maven repository\footnote{http://search.maven.org/}. After downloading dependencies we need to satisfy our project with, they are stored in a cache repository at a development computer so that way there is no need to download them over and over again. A dependency is an \textit{artifact} which has exact and unique \textit{Maven coordinates} over all dependencies. Every artifact has coordinates of the form:
+The second very important role of Maven is to track \textit{dependencies}\cite{bib022}. Dependencies are stored in \textit{repositories}. By default, dependencies are downloaded from the main Maven repository\footnote{http://search.maven.org/}. After downloading dependencies we need to satisfy our project with, they are stored in a cache repository at a development computer so that way there is no need to download them over and over again. A dependency is an \textit{artifact} which has exact and unique \textit{Maven coordinates} over all dependencies. Every artifact has coordinates of the form:
 \begin{center}
 	\begin{minipage}{.7\textwidth}
 		\lstinputlisting[style=command]{src/dependency_coordinates}
@@ -367,39 +365,39 @@ In Maven universe, besides ordinary POM files, there are also so-called \textit{
 
 Maven is very helpful tool which simplifies project management in Java EE environment enormously. Dependency tracking and artifact retrieving hide complexity of a project. The managing of a project life cycle would be very time demanding and daunting task since we would have to specify everything manually. 
 
-	\subsection{ShrinkWrap}
+	\subsection{ShrinkWrap}\label{shrinkwrap-section}
 
-ShrinWrap is very simple but powerful tool. ShrinkWrap is Java library which provides a mechanism for constructing archives as \texttt{jar}, \texttt{war} or \texttt{ear} programmatically and very easily. This is possible because of fluent API on which ShrinkWrap relies heavily and it is de facto the only way how to use the library. ShrinkWrap is standalone library and it does not depend on any additional artifacts. It needs just JRE5+ runtime.
+ShrinWrap\cite{bib030} is very simple but powerful tool. ShrinkWrap is Java library which provides a mechanism for constructing archives as \texttt{jar}, \texttt{war} or \texttt{ear} programmatically and very easily. This is possible because of fluent API\cite{bib031} on which ShrinkWrap relies heavily and it is de facto the only way how to use the library. ShrinkWrap is standalone library and it does not depend on any additional artifacts. It needs just JRE5+ run time.
 
-The main reason for using ShrinkWrap is the easiness of creating custom archives. An archive file is built in a memory and written to any target location via so called \texttt{exporter} afterwards. Resources which are added to final archive are located on class path.
+The main reason for using ShrinkWrap is the easiness of creating custom archives. An archive file is built in a memory and written to any target location via so called \texttt{exporter} afterwards. Resources which are added to the final archive are located on class path.
 
-ShrinkWrap is very sought-after tool since we can exactly specify, class by class and resource by resource, how the deployment to application server will look like and drive very subtle class path isolation which is not so obvious every time. When we are creating an archive, it is common that resources and classes which are not needed are bundled into final package as well. This fact can negatively influence functionality and run time of a deployed package e.g. by not finding desired resources or because of some clash. While testing the software, we need to isolate test cases and find the smallest common denominator which satisfies all dependencies and we need to get rid of unused resources. This approach also encourages TDD and unit testing - we are only testing classes we are interested in and we are not taking any garbage  with us which could influence the results of the test unpredictably. The example of constructing \texttt{jar} file programatically via ShrinkWrap fluent API is following: 
-
+ShrinkWrap is very sought-after tool since we can exactly specify, class by class and resource by resource, how the deployment to application server will look like and drive very subtle class path isolation. When we are creating an archive, it is common that resources and classes which are not needed are bundled into the final package as well. This fact can negatively influence functionality and run time of a deployed package e.g. by not finding desired resources or because of some clash. While testing software, we need to isolate test cases and find the smallest common denominator which satisfies all dependencies and we need to get rid of unused resources. This approach also encourages TDD and unit testing - we are only testing classes we are interested in and we are not taking any garbage with us which could influence the results of the test unpredictably. The example of constructing \texttt{jar} file programatically via ShrinkWrap fluent API is following:
+ 
 \lstinputlisting[language=Java,label=pop-pipe,caption=ShrinkWrap fluent API]{src/shrinkwrap_archive.java}
 
-The newly created \texttt{jar} file is stored in a generic \texttt{Archive} at line 5. The entry point for dealing with the library is \texttt{ShrinkWrap} class. We specify we want to create \texttt{JavaArchive}. This class has to extend generic \texttt{Archive} class (line 3). After these information, we are simply adding classes, packages or resources as manifest files into the archive, which will be persisted in \texttt{test.jar}.
+The newly created \texttt{jar} file is stored in the generic \texttt{Archive} at line 5. The entry point for dealing with the library is \texttt{ShrinkWrap} class. We specify we want to create \texttt{JavaArchive}. This class has to extend generic \texttt{Archive} class (line 3). After these information, we are simply adding classes, packages or resources as manifest files into the archive, which will be persisted in \texttt{test.jar}.
 
-Creating deployable archives with ShrinkWrap is very convenient way how to precisely specify and construct an archive which just meets our needs. We are able to put everything we want into the archive under the construction so we can bundle there our own resources at will as well as we can isolate or delete any resources and classes we want in order to strip an archive to bare deployable minimum.
+Creating deployable archives with ShrinkWrap is very convenient way how to precisely specify and construct an archive which just meets our needs. We are able to put everything we want into the archive under the construction so we can bundle there our own resources at will as well as we can isolate or delete any resources and classes we want in order to strip the archive to bare deployable minimum.
 
 		\subsection{Jenkins}
 
-Jenkins in a continuous integration (CI) tool written in Java language. Jenkins is an open source project. The purpose of Jenkins is to provide continuous integration services for development of software. In its core, it is server-based system running in some kind of servlet container as Apache Tomcat\footnote{http://tomcat.apache.org/}.
+Jenkins\cite{bib040} in a continuous integration (CI) tool written in Java language. Jenkins is an open source project. The purpose of Jenkins is to provide continuous integration services for development of software. In its core, it is server-based system running in some kind of servlet container as Apache Tomcat\footnote{http://tomcat.apache.org/}.
 
-Testing machines we are testing software under development at are called \textit{slave nodes}. A slave has various parameters such as amount of memory available, kind and version of operating system, system architecture, installed versions of Java Virtual Machines and so on. We can then register various integration servers at will and we can specify on which slave nodes we want to test our software according to their capabilities and our requirements. More often we do not specify directly which slave node we want to use. We only tag slave nodes by its capabilities and specify a query via which appropriate nodes are selected automatically.
+Testing machines we are testing software under development at are called \textit{slave nodes}\cite{bib042}. A slave has various parameters such as amount of memory available, kind and version of operating system, system architecture, installed versions of Java Virtual Machines\cite{bib041} and so on. We can then register various integration servers at will and we can specify on which slave nodes we want to test our software according to their capabilities and our requirements. More often we do not specify directly which slave node we want to use. We only tag slave nodes by its capabilities and specify a query via which appropriate nodes are selected automatically.
 
-Tests can be run at more then one slave node since we may want to know if our software is capable of running under various circumstances, e.g. if it works without issues on multiple configurations so we mimic heterogeneous target environment.
+Tests can be run at more then one slave node since we may want to know if our software is capable of running under various circumstances, e.g. if it works without issues on multiple configurations so we mimic the heterogeneous target environment.
 
 After the filtering on which node tests are going to be executed, the actual source code of our interest has to be checked out (or cloned) from central source code repository as Git\footnote{http://git-scm.com/}.
 
-The building of tests can be triggered by various means, it can be triggered periodically on some predetermined frequency (e.g. every two hours) or it can be triggered automatically by every commit we push into source code repository. Jenkins uses concept of \textit{downstream} and \textit{upstream} builds so tests or builds of downstream project is triggered when all upstream projects are built and tested without issues. Local copy of source code is cloned at slave node and Jenkins executes tests and reports results back to Jenkins master server.
+The building of tests can be triggered by various means, it can be triggered periodically on some predetermined frequency (e.g. every two hours) or it can be triggered automatically by every commit we push into source code repository. Jenkins uses concept of \textit{downstream} and \textit{upstream}\cite{bib042} builds so tests or builds of downstream project is triggered when all upstream projects are built and tested without issues. Local copy of source code is cloned at slave node and Jenkins executes tests and reports results back to Jenkins master server.
 
-Jenkins plays significant role in Java EE environment and is very widely known to Java-oriented community. Jenkins performs very well in connection with Maven-based projects and it can test and build virtually any Java project. There is the effort to make various bindings to support .Net\footnote{http://www.microsoft.com/net} or Scala\footnote{http://www.scala-lang.org/} projects with various success.
+Jenkins plays significant role in Java EE environment and is very widely known to not only Java-oriented community\cite{bib043}. Jenkins performs very well in connection with Maven-based projects and it can test and build virtually any Java project.
 
 Continuous integration system as Jenkins offers the very first prerequisite for successful and painless iterative development as described earlier and reduces uneasiness of integration testing significantly.
 
-		\subsection{JUnit}
+		\subsection{JUnit}\label{junit-subsection}
 		
-After having an arbitrary Java project based on Maven and setting up infrastructure for continuous integration testing via Jenkins, where source code is cloned or checked out from distributed source code repository, we need to perform testing itself. The most popular testing tool for Java is JUnit. JUnit is an instance of the xUnit architecture for unit testing frameworks.\footnote{http://junit.org/}.
+After having an arbitrary Java project based on Maven and setting up infrastructure for the continuous integration testing via Jenkins, where source code is cloned or checked out from distributed source code repository as Git, we need to perform the testing itself. The most popular testing tool for Java is JUnit\cite{bib050}. JUnit is an instance of the xUnit architecture for unit testing frameworks.\footnote{http://junit.org/}.
 
 JUnit tests, as the name of the framework suggests, are meant to be unit tests. As previously stated, in TDD model, which is often used in XP, unit tests are written before the code itself is created so only when tests are passed, code is considered to be finished. The very central point of the unit testing is to show that each part of the program behaves correctly. Only after that, these parts are integrated together.
 
@@ -429,17 +427,19 @@ We can specify a timeout which represents the time until every test method has t
 
 When testing, it is not possible to be sure that \texttt{@Test} methods will be executed in some determined order. Their execution is random in general via every execution of test case because of Java collection API. We can change this behavior with \texttt{FixMethodOrder} annotation at the beginning of test case class.
 
-It is not good testing technique to rely on order of execution of methods. We are doing unit testing where tests should be isolated from each other and do not influence any other test. Every test should be atomic. However, sometimes it is needed to preserve specific execution order. In these cases, we find this feature useful.
+It is not good testing technique to rely on order of execution of methods. We are doing unit testing where tests should be isolated from each other and do not influence any other test\cite{bib051}. Every test should be atomic. However, sometimes it is needed to preserve specific execution order. In these cases, we find this feature useful.
 
 	\subsection{Selenium WebDriver}
 	
-Selenium project aims to be able to automatize web browser in a such way there is a possibility to run previously specified exact set of operations at web pages. These scripts are useful for various reason. There are two distinguished  ways how to use Selenium framework. The first one reflects the need for automation of repeatedly same tasks to save time and reduce errors when done manually. The second one is to run automated tests which ensures a developer that web page responses in a predicted way which is very suitable for unit testing of web applications. Selenium of version 2.0 is integrating WebDriver API to provide more simpler and concise programming interface. WebDriver from Selenium tries to be a reference implementation of WebDriver W3C standard.\footnote{http://www.w3.org/TR/2013/WD-webdriver-20130117/}.
+Selenium\footnote{http://docs.seleniumhq.org/} project aims to be able to automatize web browser in a such way there is a possibility to run previously specified exact set of operations at web pages. These scripts are useful for various reason. There are two distinguished  ways how to use Selenium framework. The first one reflects the need for automation of repeatedly same tasks to save time and reduce errors when done manually. The second one is to run automated tests which ensures a developer that web page responses in a predicted way which is very suitable for unit testing of web applications. Selenium of version 2.0 is integrating WebDriver API to provide more simpler and concise programming interface. WebDriver from Selenium tries to be a reference implementation of WebDriver W3C standard.[61]
 
-Selenium WebDriver accepts commands and sends them to a browser. Every browser accepts different commands so then every browser supports different \textit{browser driver}. Selenium starts a browser instance and controls it. Selenium provides various language bindings including Java.
+Selenium WebDriver\footnote{http://docs.seleniumhq.org/projects/webdriver/} accepts commands and sends them to a browser. Every browser accepts commands in a slightly different way so then every browser supports different \textit{browser driver}. Selenium starts a browser instance and controls it. Selenium provides various language bindings including Java.
 
 	\section{Conclusion}
 	
-In this chapter, we discussed particular tools which are very useful in connection with integration and unit testing. Projects are managed by Maven, we are testing with JUnit. We can specify what to deploy (what to test) via ShrinkWrap and we can write functional tests in Selenium WebDriver. All of this runs via Jenkins, possibly at multiple nodes with different configurations. As we develop and make changes to source code, changes are checked out from distributed source code repository and the whole testing process is triggered. 
+In this chapter, we discussed particular tools which are very useful in connection with integration and unit testing. Projects are managed by Maven, we are testing with JUnit. We can specify what to deploy (what to test) via ShrinkWrap and we can write functional tests in Selenium WebDriver. All of this runs via Jenkins, possibly at multiple nodes with different configurations. As we develop and make changes to source code, changes are checked out from distributed source code repository and the whole testing process is triggered.
+
+The combination of this tools of tools of this kind is very suitable for the support of TDD and XP idea of software development. The only bottleneck of the fast testing turn-around in Java EE environment as TDD and XP approach is suggesting is solved by Arquillian platform as will be elaborated in the next chapter. 
 
 \chapter{Arquillian overview}
 
@@ -447,7 +447,7 @@ In this chapter, we discussed particular tools which are very useful in connecti
 
 In previous chapters, the reader was introduced to various development methodologies and their pro et contra were given. There was also brief summary of existing tools in Java ecosystem which are used for testing and project management.
 
-In the upcoming chapter, the reader will be introduced to the concept of Arquillian way of testing, how tests supposed to run with Arquillian look like and how Arquillian uses abstraction of containers and micro deployments to be able to run tests in real enterprise environment.
+In the upcoming chapter, the reader will be introduced to the concept of Arquillian\cite{bib070} way of testing, how tests supposed to run with Arquillian look like and how Arquillian uses abstraction of containers and micro deployments to be able to run tests in real enterprise environment.
 
 Arquillian is a revolutionary testing platform. It enables to developer to test his code as he develops in the real-like production environment so he is not forced to mock classes needed during testing. He just tests his code by using it. Arquillian testing platform is not only testing tool which makes testing process of TDD development of Java EE so easy but it is also the educational tool.
 
@@ -455,15 +455,15 @@ By saying that Arquillian is also the educational tool, we mean that the develop
 
 	\subsection{Why Arquillian?}
 
-When a developer wants to test his business component in Java EE environment and he uses testing tools like JUnit, he realizes early that it is not an easy task to do at all. The reason why it is so is that he tries to bring whole runtime environment into the test context so he is doomed to fake all services which will run in the production environment. This is not easy, if not impossible at all.
+When a developer wants to test his business component in Java EE environment and he uses testing tools like JUnit, he realizes early that it is not an easy task to do at all\cite{bib071}. The reason why it is so is that he tries to bring whole run time environment into the test context so he is doomed to fake all services which will run in the production environment. This is not easy, if not impossible at all.
 
 Let's say developer finished some authorization features for an enterprise product. In the very simple scenario, the authorization module has to have database connectivity in order to verify credentials of the potential user, then he has to use some identity management component to be sure that user can do only authorized operations and those which are not allowed are banned. There also has to be a logging backend which tracks from where, when and how this particular user was logged in. Not even speaking about features like dependency injection or transaction control.
 
-How does developer deal with this very unpleasant task? Does it mean, when taking conventional testing tools as JUnit or Mockito\footnote{https://code.google.com/p/mockito/} into consideration, that he needs to mock almost everything so tests does not recognize they do not run in production environment but in faked one? We see very clearly that treating any non-trivial integration tests like mentioned is no way to go. Developer is burdened with plethora of services he needs to bring to the runtime of the test so it is likely this approach will be error prone or not even doable.
+How does developer deal with this very unpleasant task? Does it mean, when taking conventional testing tools as JUnit or Mockito\footnote{https://code.google.com/p/mockito/} into consideration, that he needs to mock almost everything so tests does not recognize they do not run in production environment but in faked one? We see very clearly that treating any non-trivial integration tests like mentioned is no way to go. Developer is burdened with plethora of services he needs to bring to the run time of the test so it is likely this approach will be error prone or not even doable.
 	
 Arquillian switched the whole view of how integration and functional testing is done. Instead of bringing enterprise services to tests, it brings tests into enterprise environment.
 
-The whole idea of previous testing paradigm was to test software in a such way we want to be sure that once the software we are testing is put into production, it will behave correctly and as expected. Arquillian skipped this process. It just tests the validity of the software by direct execution in the target environment and it is making assertions in the production-like runtime. Once these tests passed and required functionality is met, we are sure our software will do so in the real production as well.
+The whole idea of previous testing paradigm was to test software in a such way we want to be sure that once the software we are testing is put into production, it will behave correctly and as expected. Arquillian skipped this process. It just tests the validity of the software by direct execution in the target environment and it is making assertions in the production-like run time. Once these tests passed and required functionality is met, we are sure our software will do so in the real production as well.
 
 	\section{Core principles}
 	
@@ -480,9 +480,13 @@ How these components fits together can be seen on the next figure:
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=80mm]{img/architecture-overview.png}
-	\caption{The Arquillian test infrastructure}
+	\caption{The Arquillian test infrastructure\cite{bib090}}
 	\label{fig:arquillian_test_infrastructure}
 \end{figure}
+
+A test case is enriched with test deployment constructed specially for our testing purposes with ShrinkWrap tool. The underlying layer Arquillian relies on is JUnit framework where Arquillian introduces its own way of running tests. The central part of Arquillian is so called \textit{container} where deployment from ShrinkWrap is deployed, tests are executed in an application container and results are sent back to Arquillian.
+
+\newpage
 
 	\section{Arquillian containers}
 	
@@ -504,7 +508,7 @@ Every container adapter has to implement \texttt{DeployableContainer}\footnote{i
 
 When involving Arquillian into our project, there has to be a possibility to configure internals of Arquillian. The configuration is happening in a dedicated file called \texttt{arquillian.xml}\footnote{placed in src/test/resources when using Maven-like project}. This file serves as a central and the only one configuration file from where Arquillian reads all necessary information in order to be able to fire tests.
 
-The selection of the container for our tests is happening at runtime, as mentioned before. Arquillian picks the right implementation according to container adapter which is present on the runtime class path when tests are executed. The very simple form of \texttt{arquillian.xml} could look like follows:
+The selection of the container for our tests is happening at run time, as mentioned before. Arquillian picks the right implementation according to container adapter which is present on the run time class path when tests are executed. The very simple form of \texttt{arquillian.xml} could look like follows:
 
 \lstinputlisting[language=XML,label=pop-pipe,caption=Simple arquillian.xml]{src/arquillian_simple.xml}
 
@@ -512,7 +516,7 @@ In this example, we specified two containers. Their appropriate dependency (cont
 
 	\section{Anatomy of an Arquillian test}
 	
-After the explanation of the concept of a container and its selection during runtime, a form of an Arquillian test will be given. Arquillian test reuses JUnit testing principles heavily. After describing of Arquillian test in general, we will discuss the deployment modification, the negotiation of the test execution, the implementation of the communication between container and Arquillian and the test enrichment as well.
+After the explanation of the concept of a container and its selection during run time, a form of an Arquillian test will be given. Arquillian test reuses JUnit testing principles heavily. After describing of Arquillian test in general, we will discuss the deployment modification, the negotiation of the test execution, the implementation of the communication between container and Arquillian and the test enrichment as well.
 
 		\subsection{Arquillian test}
 
@@ -528,7 +532,7 @@ After deployment methods, tests, as we are used, are following. Since there can 
 		
 		\subsection{Test deployment enrichment}
 
-The very first thing the client side of Arquillian does is the modification of our deployment as we constructed it in our \texttt{@Deployment} method. This task is delegated to \texttt{DeploymentPackager}\footnote{in org.jboss.arquillian.container.test.spi.client.deployment package} SPI implementation. \texttt{DeploymentPackager} is responsible for the final deployment creation. Additional archives we are bundling into deployment are created in implementations of \texttt{AuxiliaryArchiveAppender}\footnote{in org.jboss.arquillian.container.test.spi.client.deployment package}. We can further process modification of archives we added via \texttt{AuxiliaryArchiveProcessor}\footnote{in org.jboss.arquillian.container.test.spi.client.deployment package} which is called once for every found \texttt{AuxiliaryArchiveAppender}.
+The very first thing the client side of Arquillian does is the modification of our deployment as we constructed it in our \texttt{@Deployment} method. This task is delegated to \texttt{DeploymentPackager}\footnote{in org.jboss.arquillian.container.test.spi.client.deployment package} SPI implementation. \texttt{DeploymentPackager} is responsible for the final deployment creation. Additional archives we are bundling into deployment are created in implementations of \texttt{AuxiliaryArchiveAppender}\footnote{in org.jboss.arquillian.container.test.spi.client.deployment package}. The further modification of archives added to deployment is processed by \texttt{AuxiliaryArchiveProcessor}\footnote{in org.jboss.arquillian.container.test.spi.client.deployment package} which is called once for every found \texttt{AuxiliaryArchiveAppender}.
 
 Arquillian uses this SPI for adding of JUnit archive which is needed in order to be able to execute tests in the container context. It also adds other resources as, for example, \texttt{beans.xml} file into Java EE modules.
 
@@ -544,9 +548,7 @@ As we see, the test execution is performed dynamically over the network. Arquill
 
 		\subsection{Test class enrichment}	
 
-Test enrichment is the process when resources are injected into a test class. The enrichment satisfies injection points by which we can in turn access and use injected members in test methods, avoiding their mocking. By injecting resources into test class within the container context, we are dealing with exactly the same resources as upon production-like usage.
- 
-Test enrichment of the test class is happening before the actual execution of test methods. We can enrich test class by annotating members of test class by annotations. Arquillian is supporting four ways how to inject a resource into the test class.
+Test enrichment is the process when resources are injected into a test class. The enrichment satisfies injection points by which we can in turn access and use injected members in test methods, avoiding their mocking. By injecting resources into test class within the container context, we are dealing with exactly the same resources as upon production-like usage. Test enrichment of the test class is happening before the actual execution of test methods. We can enrich test class by annotating members of test class by annotations. Arquillian is supporting four ways how to inject a resource into the test class.
 
 \begin{itemize}
 \item{@Resource - use to inject Java EE resource injections}
@@ -609,9 +611,9 @@ Instance producers and usage of appropriate scope is the feature Arquillian reli
 
 	\section{Extensibility of Arquillian}
 
-Arquillian uses concept of SPI heavily so in order to override some functionality or to add our own, we have to register our custom implementation of SPI interfaces into Arquillian. These implementations then override defaults, incorporating our own functionality directly into core Arquillian infrastructure.
+Arquillian uses concept of SPI\cite{bib072} heavily so in order to override some functionality or to add our own, we have to register our custom implementation of SPI interfaces into Arquillian. These implementations then override defaults, incorporating our own functionality directly into core Arquillian infrastructure.
 
-Arquillian is extend by \textit{extensions}. An extensions is distributed as a Maven dependency. In order to recognize an extension from Arquillian point of view, an extension has to specify the access point to it. The name of a class which implements \texttt{LoadableExtension}\footnote{in org.jboss.arquillian.core.spi package} SPI has to be placed in the file of the same name in \texttt{src/main/resources/META-INF} folder in the extension module.
+Arquillian is extend by \textit{extensions}. An extensions is distributed as a Maven dependency. In order to recognize an extension from Arquillian point of view, an extension has to specify an access point to it. The name of a class which implements \texttt{LoadableExtension}\footnote{in org.jboss.arquillian.core.spi package} SPI has to be placed in the file of the same name in \texttt{src/main/resources/META-INF} folder in the extension module.
 
 Concrete implementations of SPI interfaces are registered in the implementation of \texttt{LoadableExtension} in \texttt{register} method. Classes are registered via \texttt{LoadableExtension.ExtensionBuilder}. To pick the most important methods, these are \texttt{observer}, for registering classes which observe for events, and \texttt{service}, for registering classes which are able to produce instances to be injected into other classes.
 
@@ -635,29 +637,29 @@ As we saw, the central concept around which Arquillian is turning around is the 
 
 As described previously, the support for a container is implemented via container adapter. A container adapter is a Maven dependency which, once on class path, it is able to communicate with Arquillian on one side and with concrete container implementation on the other side.
 
-When we want to bring the whole testing idea from ordinary Java EE environment into Android platform, taking into consideration container abstraction, we clearly see that Android device itself could be viewed as container to which applications are deployed and the whole principle of testing could be just the same. Since deployment is a term used for Java EE containers, we will use term \textit{installation} instead.
+When we want to bring the whole testing idea from ordinary Java EE environment into Android platform\footnote{http://www.android.com/}, taking into consideration container abstraction, we clearly see that Android device itself could be viewed as container to which applications are deployed and the whole principle of testing could be just the same.
 
 Testing of applications is divided into two categories. We can test web applications and native Android applications.
 
 Regarding web applications, it is clear that they are not going to be run on Android device itself. Web applications are deployed in ordinary application containers as we are used. However, when executing tests, web application or its part from \texttt{@Deployment} has to be deployed in web application container but tests have to be executed from Android point of view, in browser which runs on Android device, against the web deployment.
 
-This approach brings the basic problem in supporting of multiple adapter containers on the class path. As explained previously, we can specify only container (even multiple of them) of the same kind. Next, we have to figure out how testing will be carried out. We need to bring Selenium into Android context.
+This approach brings the basic problem in supporting of multiple adapter containers on the class path. As explained previously, we have to specify only container (even multiple of them) of the same kind. Next, we have to figure out how testing will be carried out. We need to bring Selenium into Android context.
 
 Regarding native Android application, we need to do the investigation how Android container could support writing tests in a similar way as Selenium is doing with web browsers. Selenium and its extensions as WebDriver operates with web elements. When testing native Android applications, we need to operate on elements by which application is built as such.
 
-Last but not least, we need to implement the whole Android container. Android container is working with two types of containers. One type of container stands for virtual device called \textit{Android Virtual Device (AVD)} from Android SDK. The other one is real physical Android device (e.g. a mobile phone).
+Last but not least, we need to implement the whole Android container. Android container is working with two types of containers. One type of container stands for virtual device called \textit{Android Virtual Device (AVD)}\cite{bib081} from Android SDK. The other one is real physical Android device (e.g. a mobile phone).
 
 It is necessary to support both types of devices from developer point of view so he uses Android device transparently - it does not matter if there is emulated or real device underneath. 
 
 Since we strives for having only one implementation of Arquillian Android container and we need to support web testing as well as native testing of Android applications, we have to provide a way how to achieve this desire. 
 
-Arquillian Android container has to be \textit{testing agnostic}, meaning the decision about the way of testing (web or native mode) is the decision resolved upon runtime. Whichever implementation of testing mode will be present on class path during testing process, that testing mode will be used.
+Arquillian Android container has to be \textit{testing agnostic}, meaning the decision about the way of testing (web or native mode) is the decision resolved upon run time. Whichever implementation of testing mode will be present on class path during testing process, that testing mode will be used.
 
 Supporting both modes of testing while having one kind of container leads to the necessity of implementing Arquillian Android container in a pluggable way. By this solution, we are opening doors for other kind of testing implementation which developer could deliver for Arquillian Android container, preserving its extensibility.
 
 	\section{Architectural decisions}
 
-Arquillian Android container\footnote{expression "Android container" will be used from now on for brevity} is managed container. Managed containers, as described earlier, are containers which life cycle is controlled and initiated (like start and stop of container) by Arquillian itself.
+Arquillian Android container\footnote{expression "Android container" will be used from now on for brevity} is managed container. Managed containers, as described earlier, are containers which life cycle is controlled and initiated (like start and stop of a container) by Arquillian itself.
 
 Android container is in some sense remote container as well. We need to be able to connect to running AVD instances as well as to some real physical device which is already up and running independently from us. In this case, we should use term \textit{remote container} instead of managed but we prefer managed version more since connecting to already running container is just a feature of the container logic as such.
 
@@ -673,7 +675,7 @@ At high level, Android container consists of these Maven based sub-projects (by 
 	\item{\texttt{android-container-depchain}: aggregates all implementation modules in case they are needed in other project}
 	\item{\texttt{android-container-managed}: introduces the central implementation of the Android container.}
 	\item{\texttt{android-container-spi}: implements classes for events to be fired to control execution path for Android container}
-	\item{\texttt{android-multiple-containers}: implements custom implementation of container registration for Arquillian so more than one container adapter can be present at class path during runtime}
+	\item{\texttt{android-multiple-containers}: implements custom implementation of container registration for Arquillian so more than one container adapter can be present at class path during run time}
 	\item{\texttt{pom.xml}: aggregates all modules, serves as a parent via which the whole project is built, packaged and installed.}
 \end{itemize}
 
@@ -681,7 +683,7 @@ To reflect parent-child relationship from the Maven point of view, the following
 
 From the design point of view, Android container execution flow is event-driven which means the flow from one part of program to another is based on message passing as described previously. By designing Android container this way, Android container is highly modular. There is not spaghetti-like code not only because of objected oriented approach but also because we can isolate the responsibility of implementation classes very easily and precisely.
 
-By event-driven approach, extensions of Android container are written relatively easily as well. Even if we do not know how particular functionality will be implemented by future extensions, by firing and observing events we are providing extension points the third party software can rely on. Android container just offers these events to be observed, processed and fired back. Since firing of messages directs execution flow, integration of external extensions which have to be put on class path at runtime guarantees that Android container is pluggable.
+By event-driven approach, extensions of Android container are written relatively easily as well. Even if we do not know how particular functionality will be implemented by future extensions, by firing and observing events we are providing extension points the third party software can rely on. Android container just offers these events to be observed, processed and fired back. Since firing of messages directs execution flow, integration of external extensions which have to be put on class path at run time guarantees that Android container is pluggable.
 
 All events to be fired are located in the separate Maven dependency called \texttt{android-container-spi}. \texttt{android-container-spi} package contains nothing but these events.
 
@@ -692,15 +694,20 @@ All events to be fired are located in the separate Maven dependency called \text
 	\label{fig:android_container_maven_modules}
 \end{figure}
 
+Arquillian Android container profits from extension called \textit{arquillian-extension-android}\footnote{https://github.com/arquillian/arquillian-extension-android} which is by now considered to be obsolete and Arquillian Android container is its successor.
+Arquillian Android container uses low-level system features as the implementation of process management and communication with emulator instance but these kinds of implementation are heavily refactored and incorporated in Arquillian Android container implementation.
+
+The main and profound difference between existing extension for Android and Arquillian Android container is that it does not follow container life cycle of Arquillian API and there are severe restrictions regarding of running multiple tests in one test run (it is not possible). The existing extension is only able to treat one Android device, is not able to treat Android SD card life cycle (SD card implementation is not done at all) and it is not possible to generate Android virtual devices from scratch dynamically. Android extension is missing container abstraction, we can not mix multiple containers in one test (of the same kind or different kinds) and the life cycle of application container has to be treated separately.
+
 \chapter{Implementation of Arquillian Android container}
 
-It is clear that we have to interact with actual Android device in some way. Android container is just a layer between Arquillian and Android device. The interface of Android device we can communicate with is implemented in Maven library called \texttt{ddmlib}\footnote{com.android.ddmlib:ddmlib}. \texttt{ddmlib} is Java library for communication with Android device and Android Debug Bridge to which Android device is connected. We do not communicate with Android device directly but we do so via mentioned Android Debug Bridge. Every device is connected to so called \textit{console port}. We can execute various command via debug bridge, these are internally translated into corresponding commands and actions performed at Android device, virtual or physical.
+It is clear that we have to interact with actual Android device in some way. Android container is just a layer between Arquillian and Android device. The interface of Android device we can communicate with is implemented in Maven library called \texttt{ddmlib}\footnote{com.android.ddmlib:ddmlib}. \texttt{ddmlib} is Java library for communication with Android device and Android Debug Bridge\cite{bib100} to which Android device is connected. We do not communicate with Android device directly but we do so via mentioned Android Debug Bridge. Every device is connected to so called \textit{console port}. We can execute various command via debug bridge, these are internally translated into corresponding commands and actions performed at Android device, virtual or physical.
 
-In order to be able to arrange interaction with Android devices, there has to be Android SDK installed on the host computer. Android SDK bundles all existing versions of AVD\footnote{Android Virtual Device}, provides all commands for creating AVD, starting emulator, creating Android SD card and so on. It is crucial to have Android SDK installed on host computer when testing. Without Android SDK, it is not possible to bring Android into our tests. The existence and presence of Android SDK is tested in Android container. Its location is typically reflected by \texttt{ANDROID\_HOME} system property, it can be changed in container configuration to any arbitrary location.
+In order to be able to arrange interaction with Android devices, there has to be Android SDK installed on the host computer. Android SDK bundles all existing versions of AVDs, provides all commands for creating an AVD, starting emulator, creating Android SD card and so on. It is crucial to have Android SDK installed on host computer when testing. Without Android SDK, it is not possible to bring Android into our tests. The existence and presence of Android SDK is tested in Android container. Its location is typically reflected by \texttt{ANDROID\_HOME} system property, it can be changed in container configuration to any arbitrary location.
 
 	\section{Extension for multiple containers}
 
-In order to suppress the limitation of Arquillian container abstraction - using only one implementation of \texttt{DeployableContainer} on the classpath at time - there is the module \texttt{arquillian-multiple-containers} implemented. The very first thing which Arquillian does while executing the testing lifecycle is to read Arquillian descriptor in \texttt{arquillian.xml} and figure out which containers are about to be registered.
+In order to suppress the limitation of Arquillian container abstraction - using only one implementation of \texttt{DeployableContainer} on the classpath at time \cite{bib110}- there is the module \texttt{arquillian-multiple-containers} implemented. The very first thing which Arquillian does while executing the testing life cycle is to read Arquillian descriptor in \texttt{arquillian.xml} and figure out which containers are about to be registered.
 
 In \texttt{arquillian-multiple-containers} module we are suppressing the implementation of \texttt{ContainerExtension}\footnote{in org.jboss.arquillian.container.impl package} and we are providing \texttt{MultipleContainersExtension}\footnote{in org.jboss.arquillian.extension.multiplecontainers package} implementation instead. The fact \linebreak about taking other container extension implementation into consideration is fulfilled via SPI mechanism in \texttt{META-INF/services/}\footnote{in org.jboss.arquillian.core.spi.LoadableExtension} configuration file. 
 
@@ -718,9 +725,9 @@ Configuration of Android container is defined by implementations of \texttt{Cont
 
 Validation of all configuration properties is executed via \texttt{validate} method of configuration class. The complete documentation of the container configuration can be found in resources.
 
-	\section{Implementation of container lifecycle}	
+	\section{Implementation of container life cycle}	
 	
-We start the explanation of Android container implementation with the most crucial class the whole container lifecycle is turning around - \texttt{AndroidManagedDeployableContainer}\footnote{in org.jboss.arquillian.container.android.managed package}. All container implementations have to implement \texttt{DeployableContainer} interface as this class does. The lifecycle of any container (so Android container as well) can be described in the following flow, names of these actions are exactly names of methods of \texttt{DeployableContainer} to be overridden:
+We start the explanation of Android container implementation with the most crucial class the whole container life cycle is turning around - \texttt{AndroidManagedDeployableContainer}\footnote{in org.jboss.arquillian.container.android.managed package}. All container implementations have to implement \texttt{DeployableContainer} interface as this class does. The life cycle of any container (so Android container as well) can be described in the following flow, names of these actions are exactly names of methods of \texttt{DeployableContainer} to be overridden:
 
 \begin{itemize}
 	\item{\texttt{setup} - sets up a container, e.g. its configuration passed as the argument is treated appropriately and additional steps required to be done before actual starting of a container are figured out}
@@ -730,7 +737,7 @@ We start the explanation of Android container implementation with the most cruci
 	\item{\texttt{stop} - stops container, in case of managed container it means its shutdown, in case of remote container it basically means that we disconnect from it safely after deployment is undeployed and test results are returned back to us}
 \end{itemize}
 
-When setting up Android container in \texttt{setup} method, first of all, Android container configuration \footnote{AndroidManagedContainerConfiguration class} is made \texttt{@ContainerScoped} via its \texttt{InstanceProducer} injection point. By doing this, we can access Android configuration during the whole Android container lifecycle via normal \texttt{Instance} injection in any class which needs the access to Android container configuration from \texttt{arquillian.xml}.
+When setting up Android container in \texttt{setup} method, first of all, Android container configuration \footnote{AndroidManagedContainerConfiguration class} is made \texttt{@ContainerScoped} via its \texttt{InstanceProducer} injection point. By doing this, we can access Android configuration during the whole Android container life cycle via normal \texttt{Instance} injection in any class which needs the access to Android container configuration from \texttt{arquillian.xml}.
 
 This pattern of creating resources via instance producers is typical in Android container and will be visible many times now on. The usage of annotation as \texttt{@ContainerScoped} is needed because injection producers makes these classes visible during the whole lifetime of the application and that is not desired because when we start another Android container, that class would take over the new one. All instance producers creates instances which are \texttt{@ContainerScoped} for the same reason.
 
@@ -764,7 +771,7 @@ After firing of \texttt{AndroidVirtualDeviceCreate} event which initiates AVD cr
 
 Up to this point, before \texttt{AndroidEmulatorStartup} takes over, we have existing AVD and everything is prepared to start emulator process itself on a host computer. The starting of an emulator is task for \texttt{AndroidEmulatorStartup}. Android startup class produces instances of \texttt{AndroidEmulator} and \texttt{AndroidDevice} which are, as usually, container scoped. The timeout before which Android emulator has to be fully prepared\footnote{controlled with emulatorBootupTimeoutInSeconds configuration property} can be set according to our need in container configuration. If timeout passes and emulator is still not booted up fully, an exception is thrown which leaves the booting process unsuccessful, as the whole execution of tests will be. Appropriate timeout limit stops time demanding booting process which is unacceptable for our testing environment. After booting emulator in required timeout limit, \texttt{AndroidDeviceReady} event is fired.
 
-To sum up the previously written about starting of Android container, the following figure gives clear and intuitive execution tree how the whole starting logic is performed:
+To sum up the previously written about starting of Android container, the following figure \ref{fig:container_startup} gives clear and intuitive execution tree how the whole starting logic is performed:
 
 \begin{figure}[!ht]
 	\centering
@@ -775,11 +782,11 @@ To sum up the previously written about starting of Android container, the follow
 
 Starting of Android container is easy and intuitive. The best practice how to start a container does not exist. It depends on our testing environment and actual needs. For instance, if we need to start Android container with defaults, not being interested on which console port it should run nor which AVD to use, we just omit these information from the configuration. However, doing so results in starting emulator instance over and over again for every run of tests which is quite time demanding since cold boot of emulator takes up to couple of minutes. The next level of starting of Android device is having already existing AVD on the system, we save some time to create it but we need to specify AVD name we want to use in configuration. The best approach is to start Android virtual device separately and configure container configuration in \texttt{arquillian.xml} in a such way we just connect to it so no start is required. Android virtual device (running emulator) is not shut down after tests are finished. This approach simulates remote version of container abstraction, bringing tests to Android within seconds.
 
-The last use case (connecting to already running Android container) is very powerful combination in connection with remote application server as JBoss AS. We have two remote containers up and running so we save significant amount of time by not having to start them from scratch. Using this approach enables critical requirement for fast turnaround so we can develop and test web applications from Android device which run in application severs by TDD and XP way.  
+The last use case (connecting to already running Android container) is very powerful combination in connection with remote application server as JBoss AS\footnote{https://www.jboss.org/jbossas/}. We have two remote containers up and running so we save significant amount of time by not having to start them from scratch. Using this approach enables critical requirement for fast turn-around so we can develop and test web applications from Android device which run in application severs by TDD and XP way.  
 
 		\subsection{Stopping of a container}
 
-Stopping of Android container is based on same principle as its starting - it is event driven. Arquillian container lifecycle initiates stopping of any container by \texttt{stop} method of \texttt{DeployableContainer} implementation. \texttt{stop} method does nothing but fires stopping event called \texttt{AndroidContainerStop}.
+Stopping of Android container is based on same principle as its starting - it is event driven. Arquillian container life cycle initiates stopping of any container by \texttt{stop} method of \texttt{DeployableContainer} implementation. \texttt{stop} method does nothing but fires stopping event called \texttt{AndroidContainerStop}.
 
 Stopping event is observed in \texttt{AndroidEmulatorShutdown} where it subsequently brings Android device down. Physical Android device (e.g. mobile phone) is not shut down. If physical device is detected, shutting process is skipped. Virtual Android device is shut down only if Arquillian started it previously meaning when Arquillian did not connect to already running Android device but Arquillian had to start it on its own.
 
@@ -796,13 +803,15 @@ The event flow as the figure to get more convenient picture what is happening is
 	\label{fig:container_shutdown}
 \end{figure}
 
+\newpage
+
 		\subsection{Android SD card}
 	
-Every instance of emulator can function with SD card which some particular emulator is using for storing additional data or for installation of applications during or before test execution. Management of the SD card for Android emulator is carried out automatically when we start Android emulator via Android GUI application or \texttt{emulator} command. We can create SD card of any size and use it intuitively via already existing application or by command \texttt{mksdcard} which is bundled in Android SDK distribution.
+Every instance of emulator can function with SD card which some particular emulator is using for storing additional data or for installation of applications during or before test execution. Management of the SD card for Android emulator is carried out automatically when we start Android emulator via Android GUI application from Android SDK or \texttt{emulator} command. We can create SD card of any size and use it intuitively via already existing application or by command \texttt{mksdcard} which is bundled in Android SDK distribution.
 
-This concept is broken when we are using Android container. When we are using more then one emulator and SD card is used, these emulators are using the same SD card which results in the clash. Additionally, we can not easily click around in GUI as previously and there has to be a way how to control creation and deletion of SD card on the fly. Android container is capable to manage SD cards. SD card is configured similarly as Android container itself via configuration properties in container configuration in \texttt{arquillian.xml}. Every instance of emulator can have one and only one SD card. When using SD card, we have to specify its size and location on the disk. In case SD card does not exist, Android container implementation creates it automatically.
+This concept is broken when we are using Android container. When we are using more then one emulator and SD card is used, these emulators are using the same SD card which results in the clash. Additionally, we can not easily click around in GUI application as previously and there has to be a way how to control creation and deletion of SD card on the fly. Android container is capable to manage SD cards. SD card is configured similarly as Android container itself via configuration properties in container configuration in \texttt{arquillian.xml}. Every instance of emulator can have one and only one SD card. When using SD card, we have to specify its size and location on the disk. In case SD card does not exist, Android container implementation creates it automatically.
 
-Android container implements wrapper around SD card so we can use it transparently in the programmatic way. SD card abstraction is implemented in \texttt{AndroidSDCard}\footnote{in org.jboss.arquillian.container.android.managed.impl package} and its lifecycle is controlled via implementation of \texttt{AndroidSDCardManager}. \texttt{AndroidSDCardManager} is listening to two kinds of events. One event is observed for creating of SD card - \texttt{AndroidSDCardCreate}. Another one is used for deleting SD card - \texttt{AndroidSDCardDelete}.
+Android container implements wrapper around SD card so we can use it transparently in the programmatic way. The SD card abstraction is implemented in \texttt{AndroidSDCard}\footnote{in org.jboss.arquillian.container.android.managed.impl package} and its life cycle is controlled via implementation of \texttt{AndroidSDCardManager}. \texttt{AndroidSDCardManager} is listening to two kinds of events. One event is observed for creating of SD card - \texttt{AndroidSDCardCreate}. Another one is used for deleting SD card - \texttt{AndroidSDCardDelete}.
 
 The SD card location is taken from \texttt{java.io.tmpdir} system property. Sane defaults about is size (128 megabytes) and label name are provided as well. All these configuration properties can be modified dynamically via their corresponding properties in \texttt{arquillian.xml} and missing file name of SD card is generated as well as missing AVD name by already mentioned \texttt{IdentifierGenerator}.
 
@@ -811,7 +820,7 @@ SD card for Android emulator is created (and subsequently deleted when needed) b
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=120mm]{img/container-sdcards.png}
-	\caption{Arquillian Android container SD card lifecycle}
+	\caption{Arquillian Android container SD card life cycle}
 	\label{fig:container_sdcard}
 \end{figure}
 	
@@ -819,7 +828,7 @@ SD card for Android emulator is created (and subsequently deleted when needed) b
 	
 Deployment and undeployment for any container is treated in \texttt{deploy} and \texttt{undeploy} methods in \texttt{DeployableContainer} implementation. Implementation of Android container does not deal with deployments at all.
 
-The reason behind this fact is that deployment management is left on extensions which enable specific kind of testing. There can be web testing and testing of native Android applications. We do not know in advance how deployment should be treated. In case of web testing we are deploying \texttt{war} archive the most frequently. However in case of native Android applications which use APK format of archives, other steps need to be done in order to install testing package into Android device.
+The reason behind this fact is that deployment management is left on extensions which enable specific kind of testing. There can be web testing and testing of native Android applications. We do not know in advance how deployment should be treated. In case of web testing we are deploying \texttt{war} archive the most frequently. However in case of native Android applications which use APK\cite{bib120} format of archives, other steps need to be done in order to install testing package into Android device.
 
 The uncertainty of deployment from Android point of view leads to the idea that every kind of testing should managed the deployment on its own. Approach like this leaves Android container testing agnostic meaning it is up to run time what kind of testing will be performed. By doing this decision, Android container follows the same pattern with testing as Arquillian with container adapters - which kind of testing (web or native one) will be carried out is the matter of run time decision.
 	
@@ -863,7 +872,7 @@ In this chapter, the implementation of Arquillian Android container was given. W
 
 \chapter{Integration of web testing}
 
-As described earlier, Android container offers events to hook to in order to extend or implement additional functionality. Android container does not know nothing about testing but it starts and prepares virtual or physical device for tests. Concrete methodology of testing is let on external implementations. Doing so, we can provide many ways how to test in connection with Android container and third party libraries and extensions can profit from Android container greatly since it is not necessary any more to deal with the device management.
+As described earlier, Android container offers events to hook to in order to extend or implement additional functionality. Android container does not know anything about testing but it starts and prepares virtual or physical device for tests. The concrete methodology of testing is let on external implementations. Doing so, we can provide many ways how to test in connection with Android container and third party libraries and extensions can profit from Android container greatly since it is not necessary any more to deal with the device management.
 
 Functional testing of web pages and web applications is implemented in the extension called "Arquillian Android Drone for web". In the following chapter, the reader will be introduced to this extension and its implementation details will be given as well.
 
@@ -871,9 +880,9 @@ Functional testing of web pages and web applications is implemented in the exten
 
 Arquillian Android Drone for web\footnote{further will be referenced as "web Drone"} is the standalone Maven dependency which uses various modules from Android container (to name them -api, -spi and -managed). By putting this extension on class path in test's run time, we are telling Android container to test web applications.
 
-The back end of functional web testing is Selenium. To be able to communicate from Selenium to Android device, there has to be installed so called \textit{Android server} on Android device. Android server is simple web server which acts as a layer between Selenium and Android device browser. Android server is free to download from Selenium project and we can install it at Android device as any other application - it is bundled in the file called \texttt{android-server.apk}.
+The back end of functional web testing is Selenium. To be able to communicate from Selenium to Android device, there has to be installed so called \textit{Android server} on Android device. Android server is simple web server which acts as a layer between Selenium and Android device browser. Android server is free to download from Selenium project and we can install it at Android device as any other application - it is bundled in the file called \texttt{android-server.apk}\footnote{https://code.google.com/p/selenium/downloads}.
 
-In JBoss universe, Arquillian Drone extension for Arquillian extends pure Selenium and provides the simple way how to include functional tests for your application with web-based user interface. Arquillian Drone brings power of Selenium into Arquillian framework. Selenium provides a language how to communicate with a browser, like filling forms, navigating on pages and validating their content.\textbf{ref https://docs.jboss.org/author/display/ARQ/Drone}
+In JBoss universe, Arquillian Drone extension for Arquillian extends pure Selenium and provides the simple way how to include functional tests for your application with web-based user interface. Arquillian Drone brings power of Selenium into Arquillian framework. Selenium provides a language how to communicate with a browser, like filling forms, navigating on pages and validating their content.\cite{bib131}
 
 The goal of Arquillian Android Drone for web testing is to install \texttt{android-server.apk} automatically into running Android container backed by real or virtual Android device so we do not have to install that application over and over again and it is installed (and uninstalled) automatically upon test execution. Android Drone for web testing also prepares and setups communication between Selenium framework and Android device, what is done specifically is further discussed.
 
@@ -883,7 +892,7 @@ Web Drone hooks to \texttt{@AndroidDeviceReady} event fired from Android contain
 
 The first task for web Drone is to install Android server APK of Selenium to Android device. The installation is executed via abstraction of \texttt{AndroidDevice} implementation. The package is installed to Android device by \texttt{installPackage} method of \texttt{AndroidDevice} and subsequently the server application is started on Android device by executing shell command\footnote{am start -a android.intent.action.MAIN -n org.openqa.selenium.android.app/ .MainActivity} at Android device. The shell command is executed inside Android device but its execution is invoked at Android Debug Bridge which is internally capable to execute shell commands for Android devices remotely via console port.
 
-After the successful installation of the Android server, port forwarding is following. The Android server, now installed at Android device, is listening to port 8080 at Android device. The default address, from host point of view from which browser specific commands are sent to device, is \texttt{http://localhost:14444/wd/hub}. WebDriver extension from Selenium is listening to this address. By port forwarding (from local port 14444 to remote port 8080), the communication channel between Selenium (WebDriver) and Android server is up. Communication between these components is based on REST API and diving into details is out of scope. Having the Android server installed and ports forwarded, the event \texttt{AndroidDroneWebDriverInstalled} is fired.
+After the successful installation of the Android server, the port forwarding is following. The Android server, now installed at Android device, is listening to port 8080 at Android device. The default address, from host point of view from which browser specific commands are sent to device, is \texttt{http://localhost:14444/wd/hub}. WebDriver extension from Selenium is listening to this address. By port forwarding (from local port 14444 to remote port 8080), the communication channel between Selenium (WebDriver) and Android server is up. Communication between these components is based on REST\cite{bib132} API. The event \texttt{AndroidDroneWebDriverInstalled} is fired subsequently when Android server is installed and ports are forwarded.
 
 The uninstallation of the Android server after test execution is done by \texttt{AndroidDroneWebDriverUninstaller}. The event announcing the successful uninstallation (\texttt{AndroidDroneWebDriverUninstalled})is fired eventually.
 
@@ -899,7 +908,9 @@ Arquillian Android Drone for web testing is brought into Maven via its dependenc
 
 Surprisingly, when writing functional tests, there is no mentioning about Android container nor Android Drone for web. \texttt{@Deployment} is specified only for application container where web application is deployed. This fact is quite logical, we do not deploy nothing on Android device at all. We do not have to specify anything in test in order to install \texttt{android-server.apk} into Android device as well. It is the job of Android Drone extension which does this automatically behind the curtains so we can focus on writing tests straight away.
 
-We have injected \texttt{ArquillianResource} for getting address of deployed application for opening web page. We also injected \texttt{@Drone} from WebDriver - via this resource we are executing all requests and commands for functional testing. Interaction with this class operates in the end with Android device browser.
+We have injected \texttt{ArquillianResource} for getting address of deployed application for opening web page. We also injected \texttt{@Drone} from the Arquillian Graphene WebDriver - via this resource we are executing all requests and commands for functional testing. Interaction with this class operates in the end with Android device browser.
+
+Arquillian Graphene is the already existing Arquillian extension which provides functional testing of web applications. By implementing web Drone for Arquillian Android container, there is a possibility to functionally test web applications in Android container context.
 
 \lstinputlisting[language=Java,label=pop-pipe,caption=WebDriver test]{src/webdriver_test.java}
 
@@ -929,7 +940,7 @@ Since we do not have to enrich APK archive after \texttt{@Deployment} with any a
 Installation of Android application to Android device is manually doable via \texttt{adb} command (Android Debug Bridge). \texttt{adb} is versatile command for package and application management of Android device, both for virtual and physical device. ADB is the part of Android SDK suite which has to be present in system when interacting with Android platform.
 
 	\section{Instrumentation of application under test}
-	
+
 	\section{Implementation}
 
 Android Drone for native testing uses the same pattern as web-related Drone. It is implemented as standalone Maven dependency which has to be put on class path in order to use it in testing process. Since native Drone is ordinary Arquillian extension, it is registered via its \texttt{LoadableExtension} by \texttt{AndroidDroneNativeExtension}\footnote{in org.jboss.arquillian.extension.android.drone package}.
@@ -970,26 +981,37 @@ The goal is to make testing of native Android application not significantly diff
 
 \chapter{Conclusion}
 
-The point of this thesis was to bring Android testing into Arquillian testing platform which was done with success. After the design and implementation of Arquillian Android container which is able to manage life cycle of any Android device, the integration of native web testing was provided as well. This effort resulted it implemented web testing extension called Android Drone for web. Web testing plays only one role in testing as such at Android platform. There is also native testing of Android applications we have to bear in mind. The attempt of native testing realization on Android devices has resulted into extension of Android container called native Android Drone. Since deployment and undeployment lifecycle is already implemented, only WebDriver remains to be fully integrated.
+The point of this thesis was to bring functional web and native Android testing into Arquillian testing platform which was done with success. After the design and implementation of Arquillian Android container which is able to manage life cycle of any Android device, the integration of native and web testing was provided as well. This effort resulted in implemented web testing extension called Android Drone for web. Web testing plays only one role in testing as such at Android platform. There is also native testing of Android applications we have to bear in mind. The attempt of native testing realization on Android devices has resulted into extension of Android container called native Android Drone. Since deployment and undeployment life cycle is already implemented, only WebDriver remains to be fully integrated.
 
-Making functional testing possible in both web and native environment on Android device in connection with Arquillian philosophy of \textit{testing is developing}, developer can experience XP and TDD kind of development model in the mobile environment as well. Putting all together - having Maven-based project developing in XP way where tests are managed by distributed source code management tools as GIT and moving all to CI systems like Jenkins, there is the whole new level of looking on the mobile development as such which can fasten the process significantly. 
+Making functional testing possible in both web and native environment on Android device in connection with Arquillian philosophy of \textit{testing is developing}, developer can experience XP and TDD kind of development model in the mobile environment as well. Putting all together - having Maven-based project where tests are managed by distributed source code management tools as GIT and moving all to CI systems like Jenkins, there is the whole new level of looking on the mobile development as such which can fasten the process significantly. 
 
 The implementation part of this thesis is going to be added into the portfolio of JBoss tools used on the world-wide scale in the upcoming months. There is already the initiation to glue Selendroid and Android container more closely together in terms of compatibility. Selendroid project itself is in state of development as Android container is but the foundations both parts can rely on are already set up. 
-
-\chapter{Resources}
-
-
 
 \bibliographystyle{plain}  % bibliografický styl 
 \bibliography{bib-db}      % soubor s citovanými
                            % položkami bibliografie 
-
 \printindex
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %       A P P E N D I X  
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \appendix
+\chapter{Contents of the attached CD}
+
+The attached CD contains:
+
+\begin{itemize}
+\item{implementation of Arquillian Android container in the directory \texttt{arquillian-container-android}}
+\item{implementation of Arquillian Android extension of web testing in the directory \texttt{arquillian-container-android-drone-web}}
+\item{implemented deployment and undeployment logic of native applications by Arquillian Android extension of native testing in the directory \texttt{arquillian-container-android-drone-native}}
+\item{configuration parameters of Arquillian Android container in file \texttt{README.md}}
+\item{proof-of-concept implementation of web related testing in directory \texttt{kitchensink-html5-mobile}}
+\item{proof-of-concept implementation of native extension in directory \texttt{arquillian-android-container-tests}}
+\item{implementation of JUnit test used in section \ref{junit-subsection} in directory \texttt{junit-examples}}
+\item{implementation of Arquillian test where ShrinkWrap is used in section \ref{shrinkwrap-section} in directory \texttt{customers-ejb}}
+\end{itemize}
+
 \end{document}

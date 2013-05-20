@@ -1,18 +1,14 @@
 @RunWith(Arquillian.class)
 @RunAsClient
 public class WebDriverTest {
-
   @Deployment(name ="webapp")
   @TargetsContainer("jbossas")
   public static WebArchive createDeployment() {
     // By ShrinkWrap, assembly web app into WAR
   }
 
-  @Drone
-  WebDriver driver;
- 
-  @ArquillianResource
-  URL deploymentUrl;
+  @Drone WebDriver driver;
+  @ArquillianResource URL deploymentUrl;
 
   @Test
   @OperatesOnDeployment("webapp")
