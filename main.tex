@@ -126,7 +126,7 @@
 
 \newpage
 \thispagestyle{empty}
-\begin{textblock*}{\paperwidth}(0mm,0mm)
+\begin{textblock*}{\paperwidth}(8mm,0mm)
    \noindent\includegraphics[width=\paperwidth,height=\paperheight]{resources/zadanie.pdf}
 \end{textblock*}
 \mbox{}\newpage
@@ -244,7 +244,7 @@ When a developer team starts to work on some project, the very typi\-cal beginni
 
 For these reasons, the typical scenario mentioned in the sequential models, which is to consult everything in advance, is flawed and not sufficient. It is often the case that after a customer declares what he wants and the consulting is done, the second time we face the customer is upon final delivery of the product. In the extreme programming paradigm, a customer is the essential part of the developing process and he is participating all the time application is under construction. Of course, one has to design and plan at least something, there has to be clear borders e.g. the problem domain the application will be dealing with, but every further details of how it should be done later are almost meaningless.
 
-The extreme way of programming is also about doing plans but the strongest attitude can be sum up with the slogan "Do the Simplest Thing that Could Possibly Work" and the abbreviation \textit{YAGNI} which stands for "You Are not Going to Need It".
+The extreme way of programming is also about doing plans but the strongest attitude can be sum up with the slogan "Do the Simplest Thing that Could Possibly Work" and the abbreviation \textit{YAGNI}\cite{bib011} which stands for "You Are not Going to Need It".
 
 While the meaning of the first phrase is clear, the mentioned abbreviation has to be clarified. When we are developing the application, we are very often ending up with the design which is over-engineered. After completion of some problem, we have coded infrastructure for solving problems which do not even exist yet and we provided functionality which is not necessary. We likely think that by coding a lot in advance, we will be free from implementing it once there will be the need to do so. We are keeping doors widely open to hook and modify almost everything or at least with the smallest pain. But the question is - what if that situation never happen? By implementing the functionality we do not need, we will face two very probable outcomes. The~first is the need of taking care of the unused code and pulling it all the way with us while we develop which adds additional complexity to the existing code and by this way it becomes more error prone. The second is the fact that our imagination of what user wants is completely out of range so we are wasting the time.
 
