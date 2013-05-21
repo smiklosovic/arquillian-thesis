@@ -870,7 +870,7 @@ It is important to note that we are using just one injection point but every tes
 
 In this chapter, the implementation of Arquillian Android container was given. We proceeded through the extension for multiple containers to override default restriction of Arquillian to have more than one kind of container adapter on class path in run time. Basics and principles of the configuration of Android container were given as well, complete configuration reference can be found in the attached resources. The implementation of container life cycle took over after that. The description of container start and stop was given with details about the flow of events. Last but not least, the section about Android SD card implementation enabled user to mimic SD card usage for testing purpose. Subsequently, deploying and undeploying of packages was explained as the activity which Android container skips. The deployment management is the task of specific extensions which would enable user to test in a specific way, in our case web or native testing. The reader got familiar with the usage of Android container in the context of usual Arquillian test and various testing scenarios were discussed as well.
 
-\chapter{Integration of web testing}
+\chapter{Integration of web testing}\label{integration-of-web-testing}
 
 As described earlier, Android container offers events to hook to in order to extend or implement additional functionality. Android container does not know anything about testing but it starts and prepares virtual or physical device for tests. The concrete methodology of testing is let on external implementations. Doing so, we can provide many ways how to test in connection with Android container and third party libraries and extensions can profit from Android container greatly since it is not necessary any more to deal with the device management.
 
@@ -931,15 +931,54 @@ The similar approach seems to be desired for testing of native applications as w
 
 Native Android application is packaged as an \textit{APK} file, having \texttt{.apk} file extension. APK file is by its format just ordinary JAR file but named differently. So then, we can used ShrinkWrap packagin with advantage because APK file is just renamed JAR file but ShrinkWrap treats them internally the same way - they are both ordinary ZIP files - internal layout of resources is different, indeed, but in order to specify deployment for Arquillian, we can work with APK files without hassles.
 
-Deployment of Android package which is meant to be installed into Android device upon deployment phase is specified in \texttt{@Deployment} method of test class. There has to be used \texttt{JavaArchive.class} kind of archive. In fact, APK file \textit{is} JAR archive but it is just named differently.
+Deployment of Android package which is meant to be installed into Android device upon deployment phase is specified in \texttt{@Deployment} method of test class. There has to be used \texttt{JavaArchive.class} kind of archive. Taking already written into consideration, Arquillian swallows an APK archive well.
 
-Delivering of APK file to test is up to tester. Since application to test is ShrinkWrap archive, we could easily construct APK file in \texttt{@Deployment} at will from scratch. At this place, we can see true importance of ShrinkWrap tool in action. The same way we constructed web application or business logic we were interested into, the same way we can construct native Android application with custom resources, putting anything we want into it, totally control what is under test.
+Delivering of APK file to test is up to tester. Since application to test is ShrinkWrap archive, we could easily construct the whole APK file in \texttt{@Deployment} at will from scratch. At this place, we can see true importance of ShrinkWrap tool in action. The same way we constructed web application or business logic we were interested into, the same way we can construct native Android application with custom resources, putting anything we want into it, totally control what is under test.
 
 Since we do not have to enrich APK archive after \texttt{@Deployment} with any additional resources which are added by Arquillian itself internally (e.g. container and test API for remote test execution), we have to tell Arquillian that we just want to send APK file \textit{as-is}. This intention is done with \texttt{testable = false} annotation parameter of \texttt{@Deployment} method. By specifying this parameter, Arquillian does not put anything else inside APK, leaving APK file the same as we constructed it in \texttt{@Deployment} method.
 
 Installation of Android application to Android device is manually doable via \texttt{adb} command (Android Debug Bridge). \texttt{adb} is versatile command for package and application management of Android device, both for virtual and physical device. ADB is the part of Android SDK suite which has to be present in system when interacting with Android platform.
 
 	\section{Instrumentation of application under test}
+	
+The expression \textit{functional testing of Android native application} means a process when a tester simulates a real user interaction with an application while he uses it as it is normally intended. It means that tester ensures himself that an application he is developing is behaving correctly from the functional point of view, for example tapping on the screen and using components of the application such as buttons, text fields, combo boxes and so on. If an application is production-ready, we have to be sure it does what it is expected to do and user experience is without issues. It is desirable to automate this process since manual testing is error-prone and time consuming.
+
+When the need of instructing an application arises, the only possible way how to test native application in this way is by so called \textit{instrumentation}. Android instrumentation is a set of control methods or \textit{hooks} in the Android system. These hooks control an Android component independently of its normal life cycle. They also control how Android loads applications.
+
+Normally, an Android component runs in a life cycle determined by the system. For example, an Activity object's life cycle starts when the Activity is activated by an Intent. The object's \textit{onCreate()} method is called, followed by \textit{onResume()}. The Android framework API does not provide a way for the code to invoke these callback methods directly, but we can do so using mentioned instrumentation. With Android instrumentation, it is possible to invoke callback methods in our test code. This allows to run through the life cycle of a component step by step.\cite{bib140}
+
+    \section{Anatomy of an instrumentation test}
+
+From the chapter dealing with web testing \ref{integration-of-web-testing}, the functional testing was solved by driving a browser via specified WebDriver API. In addition, there has to be implemented \textit{driver} in order to be able to test specific web browser. So then, when testing against Android device, there has to be present \texttt{AndroidDriver}\footnote{in org.openqa.selenium.android package of Selenium} implementation.
+
+The testing will be using the same pattern as web testing. We will be using Selenium WebDriver (or any of its extensions as Arquillian Graphene) to drive an Android device e.g. be able to communicate with it by sending REST calls to a device.
+
+So far, we know that there will be the usage of Android driver from Selenium WebDriver and that Android device has to be instrumented. What is missing is the central instrumentation application which translates REST API calls from Android driver to underlying instrumentation infrastructure.
+
+The missing part is implemented in a tool called Selendroid\footnote{https://github.com/DominikDary/selendroid}. Selendroid is based on the Android instrumentation framework. It uses two components, application under test and \textit{Selendroid server}.
+
+Application under test is the application we are testing. There is no need to modify an \textit{aut} in any way and it is not expected nor desired to modify it.
+
+On the other hand, the application which has to be modified is Selendroid server. Selendroid server is a component installed into Android device which follows instrumentation framework to instrument an \textit{aut}.
+
+To note the Selendroid server about application which it instruments, we have to modify \texttt{AndroidManifest.xml} of the server application and to specify what application this Selendroid server is going to instrument via Android instrumentation framework. This information is stored in instrumentation element of \texttt{AndroidManifest.xml} of Selendroid server. So then, every time we are going to instrument \textit{aut}, every time we have to modify Selendroid server and change so called \texttt{targetPackage} parameter of instrumentation element of \texttt{Android.xml} to reflect our will. The following snippet describes this more specifically:
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Modification of AndroidManifest.xml of Selendroid server]{src/selendroid_manifest.java}
+
+\texttt{android:name} says what class is extending \texttt{Instrumentation}\footnote{in android.app.Instrumentation package} so it is the class which drives whole instrumentation of the \textit{aut}. On the other hand, \texttt{android:targetPackage} specifies what is the target application to instrument, in other way, what the \textit{aut} is.
+
+After modifying the \texttt{AndroidManifest.xml} of Selendroid server by this way. We can proceed to testing of native Android applications.
+
+Selendroid server which creates a layer between WebDriver and \textit{aut} has HTTP server bundled in it. When Selendroid server is installed (with \textit{aut} separately) and started, the embedded HTTP server is booted and by this way we can communicate with Android device externally - the perfect place for Android driver of WebDriver to hook to and send REST commands. These commands are the internally translated in Selendroid server into native Android API calls which drives and simulates an Android device subsequently.
+
+The figure illustrating the test architecture of Selendroid is provided on the next figure:
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[origin=c,width=130mm]{resources/selendroid.png}
+	\caption{Selendroid architecture\cite{bib141}}
+	\label{fig:selendroid_architecture}
+\end{figure}
 
 	\section{Implementation}
 
@@ -985,12 +1024,15 @@ The point of this thesis was to bring functional web and native Android testing 
 
 Making functional testing possible in both web and native environment on Android device in connection with Arquillian philosophy of \textit{testing is developing}, developer can experience XP and TDD kind of development model in the mobile environment as well. Putting all together - having Maven-based project where tests are managed by distributed source code management tools as GIT and moving all to CI systems like Jenkins, there is the whole new level of looking on the mobile development as such which can fasten the process significantly. 
 
-The implementation part of this thesis is going to be added into the portfolio of JBoss tools used on the world-wide scale in the upcoming months. There is already the initiation to glue Selendroid and Android container more closely together in terms of compatibility. Selendroid project itself is in state of development as Android container is but the foundations both parts can rely on are already set up. 
+The implementation part of this thesis is going to be added into the portfolio of JBoss tools used on the world-wide scale in the upcoming months. There is already the initiation to glue Selendroid and Android container more closely together in terms of compatibility. Selendroid project itself is in the state of development as Android container is but the foundations both parts can rely on are already set up. 
 
 \bibliographystyle{plain}  % bibliografický styl 
-\bibliography{bib-db}      % soubor s citovanými
-                           % položkami bibliografie 
-\printindex
+
+\begingroup
+\raggedright
+\bibliography{bib-db}
+\endgroup
+%\printindex
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
