@@ -886,7 +886,7 @@ In JBoss universe, Arquillian Drone extension for Arquillian extends pure Seleni
 
 The goal of Arquillian Android Drone for web testing is to install \texttt{android-server.apk} automatically into running Android container backed by real or virtual Android device so we do not have to install that application over and over again and it is installed (and uninstalled) automatically upon test execution. Android Drone for web testing also prepares and setups communication between Selenium framework and Android device, what is done specifically is further discussed.
 
-	\subsection{Implementation}
+	\section{Implementation}
 
 Web Drone hooks to \texttt{@AndroidDeviceReady} event fired from Android container when container is fully up and running. Web Drone observes this event in \texttt{AndroidDroneWebDriverInstaller}\footnote{in org.jboss.arquillian.android.drone.web.impl package}. In order to be able to interact with Android device out of container implementation, it is transferred to web Drone implementation via \texttt{AndroidDeviceReady} event.
 
@@ -925,11 +925,11 @@ Arquillian Graphene is the already existing Arquillian extension which provides 
 
 After the implementation of web testing by Android Drone for web, only the native testing of Android applications remains to be solved in context of Arquillian Android container. Web testing was implemented via standalone extension into Arquillian Android container. Only the testing infrastructure was set up by installation of Android server APK from Selenium project which enabled communication from Selenium WebDriver. Android server from Selenium acted as a bridge between WebDriver and Android device where commands simulating real functionality of an ordinary user were sent.
 
-The similar approach seems to be desired for testing of native applications as well. Firstly, when testing a native application, we have to get that application from user's space to Android device. In other words, we have to install an application under test\footnote{will be referenced as \textit{aut} from now on} to Android device and set up the underlying infrastructure in order to be able to carry out functional tests. The next step is to provide the layer between \texttt{aut} and client side. There should be similar component as Android server APK application but for native testing instead of web testing.
+The similar approach seems to be desired for testing of native applications as well. Firstly, when testing a native application, we have to get that application from user's space to Android device. In other words, we have to install an application under test\footnote{will be referenced as \textit{aut} from now on} to Android device and set up the underlying infrastructure in order to be able to carry out functional tests. The next step is to provide the layer between \textit{aut} and client side. There should be similar component as Android server APK application but for native testing instead of web testing.
 
 	\section{Deployment of native application}
 
-Native Android application is packaged as an \textit{APK} file, having \texttt{.apk} file extension. APK file is by its format just ordinary JAR file but named differently. So then, we can used ShrinkWrap packagin with advantage because APK file is just renamed JAR file but ShrinkWrap treats them internally the same way - they are both ordinary ZIP files - internal layout of resources is different, indeed, but in order to specify deployment for Arquillian, we can work with APK files without hassles.
+Native Android application is packaged as an \textit{APK}\footnote{Android Package} file, having \texttt{.apk} file extension. APK file is by its format just ordinary JAR file but named differently. So then, we can used ShrinkWrap packaging with advantage because APK file is just renamed JAR file but ShrinkWrap treats them internally the same way - they are both ordinary ZIP files - internal layout of resources is different, indeed, but in order to specify deployment for Arquillian, we can work with APK files without hassles.
 
 Deployment of Android package which is meant to be installed into Android device upon deployment phase is specified in \texttt{@Deployment} method of test class. There has to be used \texttt{JavaArchive.class} kind of archive. Taking already written into consideration, Arquillian swallows an APK archive well.
 
@@ -937,7 +937,7 @@ Delivering of APK file to test is up to tester. Since application to test is Shr
 
 Since we do not have to enrich APK archive after \texttt{@Deployment} with any additional resources which are added by Arquillian itself internally (e.g. container and test API for remote test execution), we have to tell Arquillian that we just want to send APK file \textit{as-is}. This intention is done with \texttt{testable = false} annotation parameter of \texttt{@Deployment} method. By specifying this parameter, Arquillian does not put anything else inside APK, leaving APK file the same as we constructed it in \texttt{@Deployment} method.
 
-Installation of Android application to Android device is manually doable via \texttt{adb} command (Android Debug Bridge). \texttt{adb} is versatile command for package and application management of Android device, both for virtual and physical device. ADB is the part of Android SDK suite which has to be present in system when interacting with Android platform.
+Installation of Android application to Android device is manually doable via \texttt{adb}\footnote{Android Debug Bridge - ADB} command. \texttt{adb} is versatile command for package and application management of Android device, both for virtual and physical device. ADB is the part of Android SDK suite which has to be present in system when interacting with Android platform.
 
 	\section{Instrumentation of application under test}
 	
@@ -945,7 +945,7 @@ The expression \textit{functional testing of Android native application} means a
 
 When the need of instructing an application arises, the only possible way how to test native application in this way is by so called \textit{instrumentation}. Android instrumentation is a set of control methods or \textit{hooks} in the Android system. These hooks control an Android component independently of its normal life cycle. They also control how Android loads applications.
 
-Normally, an Android component runs in a life cycle determined by the system. For example, an Activity object's life cycle starts when the Activity is activated by an Intent. The object's \textit{onCreate()} method is called, followed by \textit{onResume()}. The Android framework API does not provide a way for the code to invoke these callback methods directly, but we can do so using mentioned instrumentation. With Android instrumentation, it is possible to invoke callback methods in our test code. This allows to run through the life cycle of a component step by step.\cite{bib140}
+Normally, an Android component runs in a life cycle determined by the system. For example, an \texttt{Activity}\footnote{http://developer.android.com/reference/android/app/Activity.html} object's life cycle starts when the \texttt{Activity} is activated by an \texttt{Intent}\footnote{http://developer.android.com/reference/android/content/Intent.html}. The object's \textit{onCreate()} method is called, followed by \textit{onResume()}. The Android framework API does not provide a way for the code to invoke these callback methods directly, but we can do so using mentioned instrumentation. With Android instrumentation, it is possible to invoke callback methods in our test code. This allows to run through the life cycle of a component step by step.\cite{bib140}
 
     \section{Anatomy of an instrumentation test}
 
@@ -1017,6 +1017,9 @@ Up to writing of this thesis, there is not integration of WebDriver implemented.
 	\section{Usage}	
 
 The goal is to make testing of native Android application not significantly different from testing of web application. By using of conventional deployment via ShrinkWrap and integrating WebDriver from Selenium, native testing will look very familiar to a user. He is just using WebDriver client API and communicates with Android application directly. The only difference is with deployment method. A user has to construct APK file manually which not likely going to happen (but is totally possible) or he can just point ShrinkWrap to the file system to pick \textit{aut} directly.
+
+
+\lstinputlisting[language=Java,label=pop-pipe,caption=Native testing via WebDriver]{src/selendroid-test.java}
 
 \chapter{Conclusion}
 
