@@ -20,7 +20,7 @@
           <y:Geometry height="51.0" width="404.65468950846054" x="32.186562530538055" y="109.28944381384792"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.5625" modelName="custom" textColor="#000000" visible="true" width="384.478515625" x="10.088086941730268" y="0.21875">AndroidManagedDeployableContainer
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.5625" modelName="custom" textColor="#000000" visible="true" width="292.33984375" x="56.15742287923027" y="0.21875">AndroidDeployableContainer
 setup<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -46,7 +46,7 @@ setup<y:LabelModel>
           <y:Geometry height="51.0" width="404.65468950846054" x="32.186562530538055" y="240.98864926220193"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.5625" modelName="custom" textColor="#000000" visible="true" width="384.478515625" x="10.088086941730268" y="0.21875">AndroidManagedDeployableContainer
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.5625" modelName="custom" textColor="#000000" visible="true" width="292.33984375" x="56.15742287923027" y="0.21875">AndroidDeployableContainer
 start<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -118,7 +118,7 @@ createAndroidEmulator<y:LabelModel>
           <y:Geometry height="49.28587897275827" width="349.2114507144952" x="394.9177651507952" y="894.2616168480789"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.5625" modelName="custom" textColor="#000000" visible="true" width="303.619140625" x="22.796155044747593" y="-0.6383105136208087">AndroidVirtualDeviceManager
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.5625" modelName="custom" textColor="#000000" visible="true" width="303.619140625" x="22.79615504474765" y="-0.6383105136209224">AndroidVirtualDeviceManager
 createAndroidVirtualDevice<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>

@@ -57,7 +57,7 @@ afterTerminateAndroidDebugBridge<y:LabelModel>
           <y:Geometry height="69.79540295119182" width="405.7906333862032" x="116.77135843371443" y="128.80767593643588"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.5625" modelName="custom" textColor="#000000" visible="true" width="384.478515625" x="10.656058880601591" y="9.616451475595909">AndroidManagedDeployableContainer
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="50.5625" modelName="custom" textColor="#000000" visible="true" width="292.33984375" x="56.72539481810159" y="9.616451475595909">AndroidDeployableContainer
 stop<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -243,7 +243,6 @@ deleteAndroidVirtualDevice<y:LabelModel>
       </data>
     </edge>
     <edge id="e7" source="n4" target="n5">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
